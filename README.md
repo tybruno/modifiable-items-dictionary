@@ -33,12 +33,12 @@ def _add_1(_value):
 
 ModifiableItemsDict._key_modifiers = [_lower]
 ModifiableItemsDict._value_modifiers = (_lower, _add_1)
-
 # Or
 # ModifiableItemsDict._key_modifiers = staticmethod(_lower)
 # ModifiableItemsDict._value_modifiers = [_lower, _add_1]
 
 modifiable_items_dict = ModifiableItemsDict({"lower":1, "UPPER":2 }, CamelCase=3, snake_case="FoUR")
+
 print(modifiable_items_dict) # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
 
 del modifiable_items_dict["LOWER"]
