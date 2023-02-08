@@ -19,6 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         if [-f setup.py]; then python setup.py install; fi
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: Test
-      run: |
-        pytest --doctest-modules
+  Test:
+    needs: build
+    run: |
+      pytest --doctest-modules
