@@ -23,8 +23,8 @@ jobs:
     - name: Test and generate coverage report
       run: |
         pytest --cov=modifiable_items_dict --cov-report=xml --doctest-modules
-    - name: "Upload coverage to Codecov"
-      uses: codecov/codecov-action@v3
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
         fail_ci_if_error: true
