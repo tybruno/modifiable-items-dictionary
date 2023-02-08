@@ -1,4 +1,5 @@
-name: Test
+
+name: pytest
 
 on: workflow_call
 
@@ -19,9 +20,6 @@ jobs:
         python -m pip install --upgrade pip
         if [-f setup.py]; then python setup.py install; fi
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-  Test:
-    needs: build
-    steps:
     - name: Test
       run: |
         pytest --doctest-modules
