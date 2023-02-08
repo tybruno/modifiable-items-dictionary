@@ -1,7 +1,7 @@
 
 name: pytest
 
-on: workflow_call
+on: push
 
 jobs:
   build:
