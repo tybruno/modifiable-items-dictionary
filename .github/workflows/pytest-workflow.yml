@@ -21,7 +21,7 @@ jobs:
         if [-f setup.py]; then python setup.py install; fi
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
     - name: Test and generate coverage report
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
         fail_ci_if_error: true # optional (default = false)
