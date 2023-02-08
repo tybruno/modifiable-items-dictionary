@@ -1,7 +1,0 @@
-name: Linting and Testing
-
-on: push
-
-jobs:
-  test:
-    uses: ./.github/workflows/pytest-workflow.yml
