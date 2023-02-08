@@ -28,7 +28,9 @@ _SELF = TypeVar("_SELF", bound="ModifiableItemsDict")
 
 _TYPE = TypeVar("_TYPE")
 
-_MAP_FUNCTION = Union[map, ThreadPool.map, ThreadPool.imap, ThreadPool.imap_unordered]
+_MAP_FUNCTION = Union[
+    map, ThreadPool.map, ThreadPool.imap, ThreadPool.imap_unordered
+]
 
 _KEY = Hashable
 _VALUE = Any
@@ -60,6 +62,7 @@ class ModifiableItemsDict(dict):
     Note: multithreading.pool.Pool doesn't work because a dict is not pickable but multhreading.pool.ThreadPool
     is because it doesn't need to pickle
     """
+
     __slots__ = ()
 
     # TODO: Add validators
@@ -137,10 +140,14 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified *v*
         """
-        _modified_value: _VALUE = self._modify_item(value, self._value_modifiers)
+        _modified_value: _VALUE = self._modify_item(
+            value, self._value_modifiers
+        )
         return _modified_value
 
-    def _modify_key_and_item(self, key_and_value: Tuple[_KEY, _VALUE]) -> Tuple[_KEY, _VALUE]:
+    def _modify_key_and_item(
+        self, key_and_value: Tuple[_KEY, _VALUE]
+    ) -> Tuple[_KEY, _VALUE]:
         _key, _value = key_and_value
         if self._key_modifiers:
             _key = self._modify_key(_key)
@@ -170,12 +177,19 @@ class ModifiableItemsDict(dict):
             Dictionary with the modified keys and values.
         """
 
-        new_mapping: Mapping[_KEY, _VALUE] = {key: value for key, value in self._map_function(self._modify_key_and_item, iterable)}
+        new_mapping: Mapping[_KEY, _VALUE] = {
+            key: value
+            for key, value in self._map_function(
+                self._modify_key_and_item, iterable
+            )
+        }
 
         return new_mapping
 
-    def _iterable_to_modified_dict(self, iterable: Iterable) -> Mapping[_KEY, _VALUE]:
-        """ Convert an *iterable* to a *Mapping* that has had it's keys and values modified.
+    def _iterable_to_modified_dict(
+        self, iterable: Iterable
+    ) -> Mapping[_KEY, _VALUE]:
+        """Convert an *iterable* to a *Mapping* that has had it's keys and values modified.
 
         Args:
             iterable: *Iterable* that will be converted to a *Mapping* which has had it's items modified.
@@ -191,7 +205,11 @@ class ModifiableItemsDict(dict):
         return iterable
 
     @classmethod
-    def fromkeys(cls, __iterable: Iterable[_KEY], __value: Optional[Union[_VALUE, None]] = None) -> _SELF:
+    def fromkeys(
+        cls,
+        __iterable: Iterable[_KEY],
+        __value: Optional[Union[_VALUE, None]] = None,
+    ) -> _SELF:
         return cls(dict.fromkeys(__iterable, __value))
 
     @overload
