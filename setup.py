@@ -4,7 +4,7 @@ from setuptools import (
     setup,
 )
 
-__version__ = "v1,0"
+__version__ = "v1.0"
 __author__ = "Tyler Bruno"
 
 with open("README.md", "r", encoding="utf-8") as file:
@@ -17,7 +17,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     keywords="python dict dictionary",
-    url="https://github.com/tybruno/caseless-dictionary",
+    url="https://github.com/tybruno/modifiable-items-dictionary",
     license="MIT",
     package_data={"modifiable-items-dictionary": ["py.typed"]},
     packages=find_packages(),
