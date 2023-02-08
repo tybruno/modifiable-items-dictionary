@@ -62,6 +62,7 @@ class ModifiableItemsDict(dict):
     """
     __slots__ = ()
 
+    # TODO: Add validators
     _key_modifiers: _KEY_MODIFIERS = None
     _value_modifiers: _VALUE_MODIFIERS = None
     _map_function: _MAP_FUNCTION = map
@@ -86,6 +87,9 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified Item. If the modifiers are *None* return the *__item* unchanged.
         """
+        if not modifiers:
+            return item
+
         # Defensive Programming
         if isinstance(modifiers, str):
             _error: TypeError = TypeError(
@@ -95,9 +99,6 @@ class ModifiableItemsDict(dict):
                 (str,),
             )
             raise _error
-
-        if not modifiers:
-            return item
 
         if isinstance(modifiers, Iterable):
             for modifier in modifiers:
@@ -115,7 +116,7 @@ class ModifiableItemsDict(dict):
         )
         raise _error
 
-    def _modify_key(self, key: _KEY) -> Hashable:
+    def _modify_key(self, key: _KEY) -> _KEY:
         """Modify the *__key* with the __key modifiers.
 
         Args:
@@ -124,10 +125,10 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified *__key*.
         """
-        _modified_key: Hashable = self._modify_item(key, self._key_modifiers)
+        _modified_key: _KEY = self._modify_item(key, self._key_modifiers)
         return _modified_key
 
-    def _modify_value(self, value: _VALUE):
+    def _modify_value(self, value: _VALUE) -> _VALUE:
         """Modify the *v* with the v modifiers.
 
         Args:
@@ -136,7 +137,7 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified *v*
         """
-        _modified_value: Any = self._modify_item(value, self._value_modifiers)
+        _modified_value: _VALUE = self._modify_item(value, self._value_modifiers)
         return _modified_value
 
     def _modify_key_and_item(self, key_and_value: Tuple[_KEY, _VALUE]) -> Tuple[_KEY, _VALUE]:
