@@ -107,7 +107,7 @@ class ModifiableItemsDict(dict):
             for modifier in modifiers:
                 item = modifier(item)
             return item
-        elif callable(modifiers):
+        if callable(modifiers):
             item = modifiers(item)
             return item
 
