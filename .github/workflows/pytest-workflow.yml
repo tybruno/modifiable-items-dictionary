@@ -22,5 +22,6 @@ jobs:
   Test:
     needs: build
     steps:
+    - name: Test
       run: |
         pytest --doctest-modules
