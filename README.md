@@ -10,6 +10,8 @@ This class extends and maintains the original functionality of the builtin `dict
 * **Easy**: Flexable and easy to add Key and/or Value modifiers to the `ModifiableItemsDict`
 * **Great Developer Experience**: Being fully typed makes it great for editor support.
 * **Fully Tested**: Our test suit fully tests the functionality to ensure that `ModifiableItemsDict` runs as expected.
+* **There is More!!!**:
+    * [CaselessDict](https://github.com/tybruno/caseless-dictionary): `CaselessDict` extends `ModifiableItemsDict` which is a `CaselessDict` which ignores the case of the keys.
 
 ## Installation
 `pip install modifiable-items-dictionary`
