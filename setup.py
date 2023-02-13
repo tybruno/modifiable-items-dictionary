@@ -4,8 +4,9 @@ from setuptools import (
     setup,
 )
 
-__version__ = "v1.0.0"
+__version__ = "v1.0.1"
 __author__ = "Tyler Bruno"
+_description = "Typed and Tested Modifiable Items Dict which allows keys and values to be modified at run time."
 
 with open("README.md", "r", encoding="utf-8") as file:
     README = file.read()
@@ -14,6 +15,7 @@ setup(
     name="modifiable-items-dictionary",
     version=__version__,
     author=__author__,
+    description=_description,
     long_description=README,
     long_description_content_type="text/markdown",
     keywords="python dict dictionary",
