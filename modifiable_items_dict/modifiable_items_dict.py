@@ -5,20 +5,8 @@ Objects provided by this module:
    `ModifiableItemsDict` - Adds the ability to modify key's and value's on creation, insertion, and retrieval
 """
 import contextlib
-from multiprocessing.pool import ThreadPool
-from typing import (
-    Any,
-    Callable,
-    Hashable,
-    Iterable,
-    Mapping,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    overload,
-    ItemsView,
-)
+import multiprocessing.pool
+import typing
 
 # Sentinel
 _OPTIONAL = object()
