@@ -25,7 +25,7 @@ This class extends and maintains the original functionality of the builtin `dict
 ## Simple Example
 
 ```python
-from modifiable_items_dict import ModifiableItemsDict
+import modifiable_items_dict
 
 
 def _add_1(_value):
@@ -34,24 +34,30 @@ def _add_1(_value):
     return _value
 
 
-ModifiableItemsDict._key_modifiers = [str.casefold]
-ModifiableItemsDict._value_modifiers = (str.casefold, _add_1)
+def _case_fold_string(_value):
+    if isinstance(_value, str):
+        _value = _value.casefold()
+    return _value
+
+
+modifiable_items_dict.ModifiableItemsDict._key_modifiers = [str.casefold]
+modifiable_items_dict.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
 # Or
-# ModifiableItemsDict._key_modifiers = staticmethod(_lower)
-# ModifiableItemsDict._value_modifiers = [_lower, _add_1]
+# modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
+# modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
 
-modifiable_items_dict = ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3, snake_case="FoUR")
+modifiable_items_dictionary = modifiable_items_dict.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
+                                                                        snake_case="FoUR")
 
-print(modifiable_items_dict)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
+print(modifiable_items_dictionary)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
 
-del modifiable_items_dict["LOWER"]
-del modifiable_items_dict["UPPER"]
-modifiable_items_dict.pop("SNAKE_CAse")
+del modifiable_items_dictionary["LOWER"]
+del modifiable_items_dictionary["UPPER"]
+modifiable_items_dictionary.pop("SNAKE_CAse")
 
-modifiable_items_dict["HeLLO"] = 5
+modifiable_items_dictionary["HeLLO"] = 5
 
-print(modifiable_items_dict)  # {'camelcase': 4, 'hello': 6}
-
+print(modifiable_items_dictionary)  # {'camelcase': 4, 'hello': 6}
 ```
 
 ## Example

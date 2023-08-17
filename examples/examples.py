@@ -6,6 +6,39 @@ import time
 import modifiable_items_dict
 
 
+def simple_example():
+    import modifiable_items_dict
+
+    def _add_1(_value):
+        if isinstance(_value, int):
+            _value += 1
+        return _value
+
+    def _case_fold_string(_value):
+        if isinstance(_value, str):
+            _value = _value.casefold()
+        return _value
+
+    modifiable_items_dict.ModifiableItemsDict._key_modifiers = [str.casefold]
+    modifiable_items_dict.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
+    # Or
+    # modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(_lower)
+    # modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_lower, _add_1]
+
+    modifiable_items_dictionary = modifiable_items_dict.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
+                                                                            snake_case="FoUR")
+
+    print(modifiable_items_dictionary)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
+
+    del modifiable_items_dictionary["LOWER"]
+    del modifiable_items_dictionary["UPPER"]
+    modifiable_items_dictionary.pop("SNAKE_CAse")
+
+    modifiable_items_dictionary["HeLLO"] = 5
+
+    print(modifiable_items_dictionary)  # {'camelcase': 4, 'hello': 6}
+
+
 def simple_inheritance_example():
     """This example shows how to create a Host Dictionary that will casefold keys, strip keys, and convert values to ip addresses
 
@@ -66,3 +99,13 @@ def threading_example():
     TimeDictWithThreading(iterable)
     end = time.perf_counter()
     print(f"{end - start:.2f} seconds")  # 0.64 seconds
+
+
+def main():
+    simple_example()
+    simple_inheritance_example()
+    threading_example()
+
+
+if __name__ == "__main__":
+    main()
