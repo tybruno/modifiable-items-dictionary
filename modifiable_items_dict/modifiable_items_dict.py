@@ -27,6 +27,9 @@ import typing
 NO_DEFAULT = object()
 
 # Typing
+# For python 3.6 compatibility
+Self = typing.TypeVar("Self", bound="ModifiableItemsDict")
+
 Key = typing.Hashable
 Value = typing.Any
 MappingCallable = typing.Union[
@@ -35,10 +38,10 @@ MappingCallable = typing.Union[
 KeyCallable = typing.Callable[[typing.Any], Key]
 ValueCallable = typing.Callable[[typing.Any], Value]
 KeyModifiers = typing.Optional[
-    typing.Union[typing.Self, KeyCallable, typing.Iterable[KeyCallable], None]
+    typing.Union[Self, KeyCallable, typing.Iterable[KeyCallable], None]
 ]
 ValueModifiers = typing.Optional[
-    typing.Union[typing.Self, ValueCallable, typing.Iterable[ValueCallable], None]
+    typing.Union[Self, ValueCallable, typing.Iterable[ValueCallable], None]
 ]
 
 
