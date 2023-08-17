@@ -3,8 +3,8 @@ Modifiable Items Dictionary and related objects.
 
 Example:
     >>> import ipaddress
-    >>> import modifiable_items_dictionary
-    >>> class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
+    >>> from modifiable_items_dictionary.modifiable_items_dictionary import ModifiableItemsDict
+    >>> class HostDict(ModifiableItemsDict):
     ...     _key_modifiers = (str.casefold, str.strip)
     ...     _value_modifiers = [ipaddress.ip_address]
     >>> browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
