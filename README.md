@@ -20,21 +20,14 @@ This class extends and maintains the original functionality of the builtin `dict
 ```python
 from modifiable_items_dict import ModifiableItemsDict
 
-
-def _lower(_key):
-    if isinstance(_key, str):
-        _key = _key.lower()
-    return _key
-
-
 def _add_1(_value):
     if isinstance(_value, int):
         _value += 1
     return _value
 
 
-ModifiableItemsDict._key_modifiers = [_lower]
-ModifiableItemsDict._value_modifiers = (_lower, _add_1)
+ModifiableItemsDict._key_modifiers = [str.casefold]
+ModifiableItemsDict._value_modifiers = (str.casefold, _add_1)
 # Or
 # ModifiableItemsDict._key_modifiers = staticmethod(_lower)
 # ModifiableItemsDict._value_modifiers = [_lower, _add_1]
@@ -55,99 +48,78 @@ print(modifiable_items_dict) # {'camelcase': 4, 'hello': 6}
 ## Example
 Let's say that there is a `.json` file that has Url hosts and their IP address. 
 Our Goal is to load the json data into a dictionary like structure that will have it's items modified during creation, insertion, and retrieval. 
-This example highlights how to inherit from `ModifiableItemsDict` and had key and value modifiers. 
+This example highlights how to inherit from `ModifiableItemsDict` and had key and value modifiers.
+
 ```python
-import contextlib
 import ipaddress
-import json
-from typing import Any, Union
 
-from modifiable_items_dict import ModifiableItemsDict
-
-def _strip(_value: Any):
-    if isinstance(_value, str):
-        _value = _value.strip()
-        return _value
-    return _value
+import modifiable_items_dict
 
 
-def _case_fold(_value: Any) -> Any:
-    if isinstance(_value, str):
-        _case_folded_string: str = _value.casefold()
-        return _case_folded_string
-    return _value
+class HostDict(modifiable_items_dict.ModifiableItemsDict):
+  _key_modifiers = [str.casefold, str.strip]
+  _value_modifiers = [ipaddress.ip_address]
+  # Or
+  # _value_modifiers = @staticmethod(ipaddress.ip_address)
 
-def _to_ipaddress(_value: Any) -> Any:
-    if isinstance(_value, str):
-        with contextlib.suppress(ValueError):
-            _ip_address: Union[
-                ipaddress.IPv4Address, ipaddress.IPv6Address
-            ] = ipaddress.ip_address(_value)
-            return _ip_address
+browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
 
-    return _value
 
-class HostDict(ModifiableItemsDict):
-    _key_modifiers = [_strip, _case_fold]
-    _value_modifiers = [_to_ipaddress]
-    # Or
-    # _value_modifiers = @staticmethod(_to_ipaddress)
+print(browsers)  # {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
 
-_json: str = '{"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"}'
-
-host_dict: HostDict = json.loads(_json, object_hook=HostDict)
-
-print(host_dict) # {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
-
-_old_browser = host_dict.pop("  gOOgle.com  ")
+_old_browser = browsers.pop("  gOOgle.com  ")
 # or 
 # del host_dict["   GooGle.com  "]
 
-host_dict["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
+browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
 
-print(host_dict) # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+print(browsers)  # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
 ```
 
 ### Threading Example
 It is easy to add Threading to a `ModifiableItemsDict`. 
 
 *NOTE: Since `ModifiableItemsDict` is not pickable it does not work with Multiprocessing.*
+
 ```python
-from multiprocessing.pool import ThreadPool as Pool
-from string import ascii_letters
-from time import perf_counter, sleep
+import multiprocessing.pool
+import string
+import time
 
-from modifiable_items_dict.modifiable_items_dict import ModifiableItemsDict
+import modifiable_items_dict
 
-pool = Pool(10)
+pool = multiprocessing.pool.ThreadPool(10)
 
 
 def _slow_function(x):
-    sleep(.05)
-    return x
+  time.sleep(.05)
+  return x
 
-class TimeDictWithThreading(ModifiableItemsDict):
-    _key_modifiers = (_slow_function,)
-    _value_modifiers = (_slow_function,)
-    _map_function = pool.imap_unordered
-    # or if order matters
-    # _map_function = pool.imap
-    
-class TimeDict(ModifiableItemsDict):
-    _key_modifiers = (_slow_function,)
-    _value_modifiers = (_slow_function,)
 
-iterable = {_letter: _index for _index, _letter in enumerate(ascii_letters)}
+class TimeDictWithThreading(modifiable_items_dict.ModifiableItemsDict):
+  _key_modifiers = (_slow_function,)
+  _value_modifiers = (_slow_function,)
+  _map_function = pool.imap_unordered
+  # or if order matters
+  # _map_function = pool.imap
+
+
+class TimeDict(modifiable_items_dict.ModifiableItemsDict):
+  _key_modifiers = (_slow_function,)
+  _value_modifiers = (_slow_function,)
+
+
+iterable = {_letter: _index for _index, _letter in enumerate(string.ascii_letters)}
 
 # Without Threading
-start = perf_counter()
+start = time.perf_counter()
 TimeDict(iterable)
-end = perf_counter()
+end = time.perf_counter()
 print(f"{end - start:.2f} seconds")  # 5.54 seconds
 
 # With Threading
-start = perf_counter()
+start = time.perf_counter()
 TimeDictWithThreading(iterable)
-end = perf_counter()
+end = time.perf_counter()
 print(f"{end - start:.2f} seconds")  # 0.64 seconds
 ```

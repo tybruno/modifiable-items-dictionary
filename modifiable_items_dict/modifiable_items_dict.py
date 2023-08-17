@@ -1,6 +1,21 @@
 """
 Modifiable Items Dictionary and related objects.
 
+Example:
+    >>> import ipaddress
+    >>> import modifiable_items_dict
+    >>> class HostDict(modifiable_items_dict.ModifiableItemsDict):
+    ...     _key_modifiers = (str.casefold, str.strip)
+    ...     _value_modifiers = [ipaddress.ip_address]
+    >>> browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
+    >>> browsers
+    {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
+    >>> _old_browser = browsers.pop("  gOOgle.Com  ")
+    >>> browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
+    >>> browsers
+    {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+
+    return _value
 Objects provided by this module:
    `ModifiableItemsDict` - Adds the ability to modify key's and value's on creation, insertion, and retrieval
 """
