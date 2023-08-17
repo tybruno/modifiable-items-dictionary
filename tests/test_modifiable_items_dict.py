@@ -6,7 +6,7 @@ import typing
 import pytest
 
 import modifiable_items_dict
-
+import modifiable_items_dict.modifiable_items_dict
 
 def _strip(_value: typing.Any):
     if isinstance(_value, str):
