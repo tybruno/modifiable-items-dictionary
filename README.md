@@ -25,7 +25,7 @@ This class extends and maintains the original functionality of the builtin `dict
 ## Simple Example
 
 ```python
-import modifiable_items_dict
+import modifiable_items_dictionary
 
 
 def _add_1(_value):
@@ -40,14 +40,14 @@ def _case_fold_string(_value):
     return _value
 
 
-modifiable_items_dict.ModifiableItemsDict._key_modifiers = [str.casefold]
-modifiable_items_dict.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
+modifiable_items_dictionary.ModifiableItemsDict._key_modifiers = [str.casefold]
+modifiable_items_dictionary.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
 # Or
 # modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
 # modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
 
-modifiable_items_dictionary = modifiable_items_dict.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
-                                                                        snake_case="FoUR")
+modifiable_items_dictionary = modifiable_items_dictionary.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
+                                                                              snake_case="FoUR")
 
 print(modifiable_items_dictionary)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
 
@@ -70,10 +70,10 @@ This example highlights how to inherit from `ModifiableItemsDict` and had key an
 ```python
 import ipaddress
 
-import modifiable_items_dict
+import modifiable_items_dictionary
 
 
-class HostDict(modifiable_items_dict.ModifiableItemsDict):
+class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
     _key_modifiers = [str.casefold, str.strip]
     _value_modifiers = [ipaddress.ip_address]
     # Or
@@ -105,7 +105,7 @@ import multiprocessing.pool
 import string
 import time
 
-import modifiable_items_dict
+import modifiable_items_dictionary
 
 pool = multiprocessing.pool.ThreadPool(10)
 
@@ -115,7 +115,7 @@ def _slow_function(x):
     return x
 
 
-class TimeDictWithThreading(modifiable_items_dict.ModifiableItemsDict):
+class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
     _map_function = pool.imap_unordered
@@ -123,7 +123,7 @@ class TimeDictWithThreading(modifiable_items_dict.ModifiableItemsDict):
     # _map_function = pool.imap
 
 
-class TimeDict(modifiable_items_dict.ModifiableItemsDict):
+class TimeDict(modifiable_items_dictionary.ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
 

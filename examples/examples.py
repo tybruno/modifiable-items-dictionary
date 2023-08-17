@@ -3,11 +3,11 @@ import multiprocessing.pool
 import string
 import time
 
-import modifiable_items_dict
+import modifiable_items_dictionary
 
 
 def simple_example():
-    import modifiable_items_dict
+    import modifiable_items_dictionary
 
     def _add_1(_value):
         if isinstance(_value, int):
@@ -19,24 +19,24 @@ def simple_example():
             _value = _value.casefold()
         return _value
 
-    modifiable_items_dict.ModifiableItemsDict._key_modifiers = [str.casefold]
-    modifiable_items_dict.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
+    modifiable_items_dictionary.ModifiableItemsDict._key_modifiers = [str.casefold]
+    modifiable_items_dictionary.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
     # Or
     # modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(_lower)
     # modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_lower, _add_1]
 
-    modifiable_items_dictionary = modifiable_items_dict.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
-                                                                            snake_case="FoUR")
+    modifiable_items_dict = modifiable_items_dictionary.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
+                                                                                  snake_case="FoUR")
 
-    print(modifiable_items_dictionary)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
+    print(modifiable_items_dict)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
 
     del modifiable_items_dictionary["LOWER"]
     del modifiable_items_dictionary["UPPER"]
-    modifiable_items_dictionary.pop("SNAKE_CAse")
+    modifiable_items_dict.pop("SNAKE_CAse")
 
-    modifiable_items_dictionary["HeLLO"] = 5
+    modifiable_items_dict["HeLLO"] = 5
 
-    print(modifiable_items_dictionary)  # {'camelcase': 4, 'hello': 6}
+    print(modifiable_items_dict)  # {'camelcase': 4, 'hello': 6}
 
 
 def simple_inheritance_example():
@@ -45,7 +45,7 @@ def simple_inheritance_example():
     """
 
     # Inherit from `ModifiableItemsDict` and set the `_key_modifiers` and `_value_modifiers` class variables.
-    class HostDict(modifiable_items_dict.ModifiableItemsDict):
+    class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
         _key_modifiers = [str.casefold, str.strip]
         _value_modifiers = [ipaddress.ip_address]
         # Or
@@ -75,14 +75,14 @@ def threading_example():
         time.sleep(.05)
         return x
 
-    class TimeDictWithThreading(modifiable_items_dict.ModifiableItemsDict):
+    class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
         _key_modifiers = (_slow_function,)
         _value_modifiers = (_slow_function,)
         _map_function = pool.imap_unordered
         # or if order matters
         # _map_function = pool.imap
 
-    class TimeDict(modifiable_items_dict.ModifiableItemsDict):
+    class TimeDict(modifiable_items_dictionary.ModifiableItemsDict):
         _key_modifiers = (_slow_function,)
         _value_modifiers = (_slow_function,)
 
