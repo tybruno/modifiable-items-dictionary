@@ -1,48 +1,45 @@
 """
 Modifiable Items Dictionary and related objects.
 
+Example:
+    >>> import ipaddress
+    >>> class HostDict(ModifiableItemsDict):
+    ...     _key_modifiers = (str.casefold, str.strip)
+    ...     _value_modifiers = [ipaddress.ip_address]
+    >>> browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
+    >>> browsers
+    {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
+    >>> _old_browser = browsers.pop("  gOOgle.Com  ")
+    >>> browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
+    >>> browsers
+    {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+
 Objects provided by this module:
    `ModifiableItemsDict` - Adds the ability to modify key's and value's on creation, insertion, and retrieval
 """
 import contextlib
-from multiprocessing.pool import ThreadPool
-from typing import (
-    Any,
-    Callable,
-    Hashable,
-    Iterable,
-    Mapping,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    overload,
-    ItemsView,
-)
+import multiprocessing.pool
+import typing
 
 # Sentinel
-_OPTIONAL = object()
+NO_DEFAULT = object()
 
 # Typing
-_SELF = TypeVar("_SELF", bound="ModifiableItemsDict")
+# For python 3.6 compatibility
+Self = typing.TypeVar("Self", bound="ModifiableItemsDict")
 
-_TYPE = TypeVar("_TYPE")
-
-_MAP_FUNCTION = Union[
-    map, ThreadPool.map, ThreadPool.imap, ThreadPool.imap_unordered
+Key = typing.Hashable
+Value = typing.Any
+MappingCallable = typing.Union[
+    map, multiprocessing.pool.ThreadPool.map, multiprocessing.pool.ThreadPool.imap, multiprocessing.pool.ThreadPool.imap_unordered
 ]
-
-_KEY = Hashable
-_VALUE = Any
-
-_KEY_CALLABLE = Callable[[Any], _KEY]
-_VALUE_CALLABLE = Callable[[Any], _VALUE]
-
-_KEY_MODIFIERS = Optional[
-    Union[_SELF, _KEY_CALLABLE, Iterable[_KEY_CALLABLE], None]
+KeyCallable = typing.Callable[[typing.Any], Key]
+ValueCallable = typing.Callable[[typing.Any], Value]
+KeyModifiers = typing.Optional[
+    typing.Union[Self, KeyCallable, typing.Iterable[KeyCallable], None]
 ]
-_VALUE_MODIFIERS = Optional[
-    Union[_SELF, _VALUE_CALLABLE, Iterable[_VALUE_CALLABLE], None]
+ValueModifiers = typing.Optional[
+    typing.Union[Self, ValueCallable, typing.Iterable[ValueCallable], None]
 ]
 
 
@@ -66,21 +63,21 @@ class ModifiableItemsDict(dict):
     __slots__ = ()
 
     # TODO: Add validators
-    _key_modifiers: _KEY_MODIFIERS = None
-    _value_modifiers: _VALUE_MODIFIERS = None
-    _map_function: _MAP_FUNCTION = map
+    _key_modifiers: KeyModifiers = None
+    _value_modifiers: ValueModifiers = None
+    _map_function: MappingCallable = map
 
     @staticmethod
     def _modify_item(
-        item: Any,
-        modifiers: Union[
-            Iterable[Callable[[Any], Hashable]],
-            Iterable[Callable[[Any], Any]],
-            Callable[[Any], Hashable],
-            Callable[[Any], Any],
-            None,
-        ],
-    ) -> Any:
+            item: typing.Any,
+            modifiers: typing.Union[
+                typing.Iterable[typing.Callable[[typing.Any], typing.Hashable]],
+                typing.Iterable[typing.Callable[[typing.Any], typing.Any]],
+                typing.Callable[[typing.Any], typing.Hashable],
+                typing.Callable[[typing.Any], typing.Any],
+                None,
+            ],
+    ) -> typing.Any:
         """Modifies an *__item* with the *modifiers*
 
         Args:
@@ -103,7 +100,7 @@ class ModifiableItemsDict(dict):
             )
             raise _error
 
-        if isinstance(modifiers, Iterable):
+        if isinstance(modifiers, typing.Iterable):
             for modifier in modifiers:
                 item = modifier(item)
             return item
@@ -115,11 +112,11 @@ class ModifiableItemsDict(dict):
             "Invalid Modifiers:",
             modifiers,
             "must be of types:",
-            (Iterable, Callable),
+            (typing.Iterable, typing.Callable),
         )
         raise _error
 
-    def _modify_key(self, key: _KEY) -> _KEY:
+    def _modify_key(self, key: Key) -> Key:
         """Modify the *__key* with the __key modifiers.
 
         Args:
@@ -128,10 +125,10 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified *__key*.
         """
-        _modified_key: _KEY = self._modify_item(key, self._key_modifiers)
+        _modified_key: Key = self._modify_item(key, self._key_modifiers)
         return _modified_key
 
-    def _modify_value(self, value: _VALUE) -> _VALUE:
+    def _modify_value(self, value: Value) -> Value:
         """Modify the *v* with the v modifiers.
 
         Args:
@@ -140,14 +137,14 @@ class ModifiableItemsDict(dict):
         Returns:
             The modified *v*
         """
-        _modified_value: _VALUE = self._modify_item(
+        _modified_value: Value = self._modify_item(
             value, self._value_modifiers
         )
         return _modified_value
 
     def _modify_key_and_item(
-        self, key_and_value: Tuple[_KEY, _VALUE]
-    ) -> Tuple[_KEY, _VALUE]:
+            self, key_and_value: typing.Tuple[Key, Value]
+    ) -> typing.Tuple[Key, Value]:
         _key, _value = key_and_value
         if self._key_modifiers:
             _key = self._modify_key(_key)
@@ -155,16 +152,16 @@ class ModifiableItemsDict(dict):
             _value = self._modify_value(_value)
         return _key, _value
 
-    @overload
+    @typing.overload
     def _create_modified_mapping(
-        self, items_view: ItemsView[_KEY, _VALUE]
-    ) -> Mapping[_KEY, _VALUE]:
+            self, items_view: typing.ItemsView[Key, Value]
+    ) -> typing.Mapping[Key, Value]:
         ...
 
-    @overload
+    @typing.overload
     def _create_modified_mapping(
-        self, iterable: Iterable[Tuple[_KEY, _VALUE]]
-    ) -> Mapping[_KEY, _VALUE]:
+            self, iterable: typing.Iterable[typing.Tuple[Key, Value]]
+    ) -> typing.Mapping[Key, Value]:
         ...
 
     def _create_modified_mapping(self, iterable):
@@ -177,7 +174,7 @@ class ModifiableItemsDict(dict):
             Dictionary with the modified keys and values.
         """
 
-        new_mapping: Mapping[_KEY, _VALUE] = {
+        new_mapping: typing.Mapping[Key, Value] = {
             key: value
             for key, value in self._map_function(
                 self._modify_key_and_item, iterable
@@ -187,8 +184,8 @@ class ModifiableItemsDict(dict):
         return new_mapping
 
     def _iterable_to_modified_dict(
-        self, iterable: Iterable
-    ) -> Mapping[_KEY, _VALUE]:
+            self, iterable: typing.Iterable
+    ) -> typing.Mapping[Key, Value]:
         """Convert an *iterable* to a *Mapping* that has had it's keys and values modified.
 
         Args:
@@ -197,41 +194,41 @@ class ModifiableItemsDict(dict):
         Returns:
             Modified Mapping of the items.
         """
-        if isinstance(iterable, Mapping):
+        if isinstance(iterable, typing.Mapping):
             iterable = self._create_modified_mapping(iterable.items())
-        elif isinstance(iterable, Iterable):
+        elif isinstance(iterable, typing.Iterable):
             iterable = self._create_modified_mapping(iterable)
 
         return iterable
 
     @classmethod
     def fromkeys(
-        cls,
-        __iterable: Iterable[_KEY],
-        __value: Optional[Union[_VALUE, None]] = None,
-    ) -> _SELF:
+            cls,
+            __iterable: typing.Iterable[Key],
+            __value: typing.Optional[typing.Union[Value, None]] = None,
+    ) -> Self:
         return cls(dict.fromkeys(__iterable, __value))
 
-    @overload
-    def __init__(self, **kwargs: _VALUE) -> None:
+    @typing.overload
+    def __init__(self, **kwargs: Value) -> None:
         ...
 
-    @overload
+    @typing.overload
     def __init__(
-        self, mapping: Mapping[_KEY, _VALUE], **kwargs: _VALUE
+            self, mapping: typing.Mapping[Key, Value], **kwargs: Value
     ) -> None:
         ...
 
-    @overload
+    @typing.overload
     def __init__(
-        self, iterable: Iterable[Tuple[str, Any]], **kwargs: _VALUE
+            self, iterable: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
     ) -> None:
         ...
 
     def __init__(
-        self,
-        iterable=None,
-        **kwargs,
+            self,
+            iterable=None,
+            **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
@@ -242,78 +239,78 @@ class ModifiableItemsDict(dict):
 
         dict.__init__(self, iterable or dict(), **kwargs)
 
-    def __getitem__(self, k: _KEY) -> Any:
+    def __getitem__(self, k: Key) -> typing.Any:
         k = self._modify_key(k)
         return dict.__getitem__(self, k)
 
-    def __setitem__(self, k: _KEY, v: _VALUE) -> None:
+    def __setitem__(self, k: Key, v: Value) -> None:
         k = self._modify_key(k)
         v = self._modify_value(v)
         dict.__setitem__(self, k, v)
 
-    def __delitem__(self, v: _KEY) -> None:
+    def __delitem__(self, v: Key) -> None:
         v = self._modify_key(v)
         dict.__delitem__(self, v)
 
-    def __contains__(self, __item: _VALUE) -> bool:
+    def __contains__(self, __item: Value) -> bool:
         __item = self._modify_key(__item)
         _is_in: bool = dict.__contains__(self, __item)
         return _is_in
 
-    def setdefault(self, __key: _KEY, __default: _VALUE = None) -> None:
+    def setdefault(self, __key: Key, __default: Value = None) -> None:
         __key = self._modify_key(__key)
         __default = self._modify_value(__default)
         dict.setdefault(self, __key, __default)
 
-    @overload
-    def pop(self, __key: _KEY) -> _VALUE:
+    @typing.overload
+    def pop(self, __key: Key) -> Value:
         ...
 
-    @overload
-    def pop(self, __key: _KEY, default: _VALUE = ...) -> _VALUE:
+    @typing.overload
+    def pop(self, __key: Key, default: Value = ...) -> Value:
         ...
 
-    def pop(self, __key, default=_OPTIONAL) -> _VALUE:
+    def pop(self, __key, default=NO_DEFAULT) -> Value:
         __key = self._modify_key(__key)
 
-        if default is _OPTIONAL:
-            value: _VALUE = dict.pop(self, __key)
+        if default is NO_DEFAULT:
+            value: Value = dict.pop(self, __key)
         else:
-            value: _VALUE = dict.pop(self, __key, default)
+            value: Value = dict.pop(self, __key, default)
 
         return value
 
-    @overload
-    def get(self, __key: _KEY) -> Union[_VALUE, None]:
+    @typing.overload
+    def get(self, __key: Key) -> typing.Union[Value, None]:
         ...
 
-    @overload
-    def get(self, __key: _KEY, default: _VALUE = None) -> _VALUE:
+    @typing.overload
+    def get(self, __key: Key, default: Value = None) -> Value:
         ...
 
-    def get(self, __key: _KEY, default=None):
+    def get(self, __key: Key, default=None):
         __key = self._modify_key(__key)
-        value: Union[_VALUE, None] = dict.get(self, __key, default)
+        value: typing.Union[Value, None] = dict.get(self, __key, default)
         return value
 
-    @overload
-    def update(self, __m: Mapping[_KEY, _VALUE], **kwargs: _VALUE) -> None:
+    @typing.overload
+    def update(self, __m: typing.Mapping[Key, Value], **kwargs: Value) -> None:
         ...
 
-    @overload
+    @typing.overload
     def update(
-        self, __m: Iterable[Tuple[str, Any]], **kwargs: _VALUE
+            self, __m: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
     ) -> None:
         ...
 
-    @overload
-    def update(self, **kwargs: _VALUE) -> None:
+    @typing.overload
+    def update(self, **kwargs: Value) -> None:
         ...
 
     def update(
-        self,
-        __m=None,
-        **kwargs,
+            self,
+            __m=None,
+            **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):

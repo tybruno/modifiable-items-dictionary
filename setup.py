@@ -1,28 +1,25 @@
 """Setup.py"""
-from setuptools import (
-    find_packages,
-    setup,
-)
+import setuptools
 
-__version__ = "v1.0.1"
+__version__ = "v2.0.0"
 __author__ = "Tyler Bruno"
 _description = "Typed and Tested Modifiable Items Dict which allows keys and values to be modified at run time."
 
 with open("README.md", "r", encoding="utf-8") as file:
     README = file.read()
 
-setup(
+setuptools.setup(
     name="modifiable-items-dictionary",
     version=__version__,
     author=__author__,
     description=_description,
     long_description=README,
     long_description_content_type="text/markdown",
-    keywords="python dict dictionary",
+    keywords="python dict dictionary mapping key-mangling",
     url="https://github.com/tybruno/modifiable-items-dictionary",
     license="MIT",
     package_data={"modifiable-items-dictionary": ["py.typed"]},
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     install_requires=[],
     classifiers=[
         "License :: OSI Approved :: MIT License",
