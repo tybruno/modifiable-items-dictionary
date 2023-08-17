@@ -68,14 +68,14 @@ class ModifiableItemsDict(dict):
 
     @staticmethod
     def _modify_item(
-        item: typing.Any,
-        modifiers: typing.Union[
-            typing.Iterable[typing.Callable[[typing.Any], typing.Hashable]],
-            typing.Iterable[typing.Callable[[typing.Any], typing.Any]],
-            typing.Callable[[typing.Any], typing.Hashable],
-            typing.Callable[[typing.Any], typing.Any],
-            None,
-        ],
+            item: typing.Any,
+            modifiers: typing.Union[
+                typing.Iterable[typing.Callable[[typing.Any], typing.Hashable]],
+                typing.Iterable[typing.Callable[[typing.Any], typing.Any]],
+                typing.Callable[[typing.Any], typing.Hashable],
+                typing.Callable[[typing.Any], typing.Any],
+                None,
+            ],
     ) -> typing.Any:
         """Modifies an *__item* with the *modifiers*
 
@@ -142,7 +142,7 @@ class ModifiableItemsDict(dict):
         return _modified_value
 
     def _modify_key_and_item(
-        self, key_and_value: typing.Tuple[Key, Value]
+            self, key_and_value: typing.Tuple[Key, Value]
     ) -> typing.Tuple[Key, Value]:
         _key, _value = key_and_value
         if self._key_modifiers:
@@ -153,13 +153,13 @@ class ModifiableItemsDict(dict):
 
     @typing.overload
     def _create_modified_mapping(
-        self, items_view: typing.ItemsView[Key, Value]
+            self, items_view: typing.ItemsView[Key, Value]
     ) -> typing.Mapping[Key, Value]:
         ...
 
     @typing.overload
     def _create_modified_mapping(
-        self, iterable: typing.Iterable[typing.Tuple[Key, Value]]
+            self, iterable: typing.Iterable[typing.Tuple[Key, Value]]
     ) -> typing.Mapping[Key, Value]:
         ...
 
@@ -183,7 +183,7 @@ class ModifiableItemsDict(dict):
         return new_mapping
 
     def _iterable_to_modified_dict(
-        self, iterable: typing.Iterable
+            self, iterable: typing.Iterable
     ) -> typing.Mapping[Key, Value]:
         """Convert an *iterable* to a *Mapping* that has had it's keys and values modified.
 
@@ -202,9 +202,9 @@ class ModifiableItemsDict(dict):
 
     @classmethod
     def fromkeys(
-        cls,
-        __iterable: typing.Iterable[Key],
-        __value: typing.Optional[typing.Union[Value, None]] = None,
+            cls,
+            __iterable: typing.Iterable[Key],
+            __value: typing.Optional[typing.Union[Value, None]] = None,
     ) -> typing.Self:
         return cls(dict.fromkeys(__iterable, __value))
 
@@ -214,20 +214,20 @@ class ModifiableItemsDict(dict):
 
     @typing.overload
     def __init__(
-        self, mapping: typing.Mapping[Key, Value], **kwargs: Value
+            self, mapping: typing.Mapping[Key, Value], **kwargs: Value
     ) -> None:
         ...
 
     @typing.overload
     def __init__(
-        self, iterable: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
+            self, iterable: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
     ) -> None:
         ...
 
     def __init__(
-        self,
-        iterable=None,
-        **kwargs,
+            self,
+            iterable=None,
+            **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
@@ -298,7 +298,7 @@ class ModifiableItemsDict(dict):
 
     @typing.overload
     def update(
-        self, __m: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
+            self, __m: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
     ) -> None:
         ...
 
@@ -307,9 +307,9 @@ class ModifiableItemsDict(dict):
         ...
 
     def update(
-        self,
-        __m=None,
-        **kwargs,
+            self,
+            __m=None,
+            **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):

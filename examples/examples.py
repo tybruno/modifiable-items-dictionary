@@ -2,6 +2,7 @@ import ipaddress
 import multiprocessing.pool
 import string
 import time
+
 import modifiable_items_dict
 
 
@@ -9,6 +10,7 @@ def simple_inheritance_example():
     """This example shows how to create a Host Dictionary that will casefold keys, strip keys, and convert values to ip addresses
 
     """
+
     # Inherit from `ModifiableItemsDict` and set the `_key_modifiers` and `_value_modifiers` class variables.
     class HostDict(modifiable_items_dict.ModifiableItemsDict):
         _key_modifiers = [str.casefold, str.strip]
@@ -26,7 +28,10 @@ def simple_inheritance_example():
 
     browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
 
-    print(browsers)  # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+    print(
+        browsers)
+    # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+
 
 def threading_example():
     """This example shows how to use Threading with `ModifiableItemsDict`."""
