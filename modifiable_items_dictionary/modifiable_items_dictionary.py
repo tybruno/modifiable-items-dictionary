@@ -3,7 +3,6 @@ Modifiable Items Dictionary and related objects.
 
 Example:
     >>> import ipaddress
-    >>> from modifiable_items_dictionary.modifiable_items_dictionary import ModifiableItemsDict
     >>> class HostDict(ModifiableItemsDict):
     ...     _key_modifiers = (str.casefold, str.strip)
     ...     _value_modifiers = [ipaddress.ip_address]
