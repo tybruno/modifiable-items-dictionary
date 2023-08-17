@@ -1,7 +1,7 @@
 """Setup.py"""
 import setuptools
 
-__version__ = "v1.0.2"
+__version__ = "v2.0.0"
 __author__ = "Tyler Bruno"
 _description = "Typed and Tested Modifiable Items Dict which allows keys and values to be modified at run time."
 
@@ -15,7 +15,7 @@ setuptools.setup(
     description=_description,
     long_description=README,
     long_description_content_type="text/markdown",
-    keywords="python dict dictionary",
+    keywords="python dict dictionary mapping key-mangling",
     url="https://github.com/tybruno/modifiable-items-dictionary",
     license="MIT",
     package_data={"modifiable-items-dictionary": ["py.typed"]},
