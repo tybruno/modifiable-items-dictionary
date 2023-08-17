@@ -208,7 +208,7 @@ class ModifiableItemsDict(dict):
             cls,
             __iterable: typing.Iterable[Key],
             __value: typing.Optional[typing.Union[Value, None]] = None,
-    ) -> typing.Self:
+    ) -> Self:
         return cls(dict.fromkeys(__iterable, __value))
 
     @typing.overload
