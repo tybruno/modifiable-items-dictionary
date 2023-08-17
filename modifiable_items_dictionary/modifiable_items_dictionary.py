@@ -14,7 +14,6 @@ Example:
     >>> browsers
     {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
 
-    return _value
 Objects provided by this module:
    `ModifiableItemsDict` - Adds the ability to modify key's and value's on creation, insertion, and retrieval
 """
