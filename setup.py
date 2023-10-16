@@ -1,9 +1,10 @@
 """Setup.py"""
 import setuptools
 
-__version__ = "v2.0.0"
+__version__ = "v2.0.1"
 __author__ = "Tyler Bruno"
-_description = "Typed and Tested Modifiable Items Dict which allows keys and values to be modified at run time."
+_description = ("Typed and Tested Modifiable Items Dict which allows keys and "
+                "values to be modified at run time.")
 
 with open("README.md", "r", encoding="utf-8") as file:
     README = file.read()
