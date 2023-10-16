@@ -32,7 +32,7 @@ builtin `dict`.
 ## Simple Example
 
 ```python
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 
 def _add_1(_value):
@@ -47,14 +47,14 @@ def _case_fold_string(_value):
     return _value
 
 
-modifiable_items_dictionary.ModifiableItemsDict._key_modifiers = [str.casefold]
-modifiable_items_dictionary.ModifiableItemsDict._value_modifiers = (
+ModifiableItemsDict._key_modifiers = [str.casefold]
+ModifiableItemsDict._value_modifiers = (
     _add_1, _case_fold_string)
 # Or
-# modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
-# modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
+# ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
+# ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
 
-modifiable_items_dictionary = modifiable_items_dictionary.ModifiableItemsDict(
+modifiable_items_dictionary = ModifiableItemsDict(
     {"lower": 1, "UPPER": 2},
     CamelCase=3,
     snake_case="FoUR"
@@ -85,10 +85,10 @@ and value modifiers.
 ```python
 import ipaddress
 
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 
-class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
+class HostDict(ModifiableItemsDict):
     _key_modifiers = [str.casefold, str.strip]
     _value_modifiers = [ipaddress.ip_address]
     # Or
@@ -102,7 +102,7 @@ browsers = HostDict(
     }
 )
 
-print(browsers)  
+print(browsers)
 # {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
 
 _old_browser = browsers.pop("  gOOgle.com  ")
@@ -111,7 +111,7 @@ _old_browser = browsers.pop("  gOOgle.com  ")
 
 browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
 
-print(browsers)  
+print(browsers)
 # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
 ```
 
@@ -127,7 +127,7 @@ import multiprocessing.pool
 import string
 import time
 
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 pool = multiprocessing.pool.ThreadPool(10)
 
@@ -137,7 +137,7 @@ def _slow_function(x):
     return x
 
 
-class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
+class TimeDictWithThreading(ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
     _map_function = pool.imap_unordered
@@ -145,7 +145,7 @@ class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
     # _map_function = pool.imap
 
 
-class TimeDict(modifiable_items_dictionary.ModifiableItemsDict):
+class TimeDict(ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
 
