@@ -25,7 +25,7 @@ This class extends and maintains the original functionality of the builtin `dict
 ## Simple Example
 
 ```python
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 
 def _add_1(_value):
@@ -40,19 +40,24 @@ def _case_fold_string(_value):
     return _value
 
 
-modifiable_items_dictionary.ModifiableItemsDict._key_modifiers = [str.casefold]
-modifiable_items_dictionary.ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
+ModifiableItemsDict._key_modifiers = [str.casefold]
+ModifiableItemsDict._value_modifiers = (_add_1, _case_fold_string)
 # Or
-# modifiable_items_dict.ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
-# modifiable_items_dict.ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
+# ModifiableItemsDict._key_modifiers = staticmethod(str.casefold)
+# ModifiableItemsDict._value_modifiers = [_case_fold_string, _add_1]
 
-modifiable_items_dictionary = modifiable_items_dictionary.ModifiableItemsDict({"lower": 1, "UPPER": 2}, CamelCase=3,
-                                                                              snake_case="FoUR")
+modifiable_items_dictionary = ModifiableItemsDict(
+    {"lower": 1, "UPPER": 2},
+    CamelCase=3,
+    snake_case="FoUR"
+    )
 
-print(modifiable_items_dictionary)  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
+print(
+    modifiable_items_dictionary
+    )  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
 
-del modifiable_items_dictionary["LOWER"]
-del modifiable_items_dictionary["UPPER"]
+del modifiable_items_dictionary["LoWEr"]
+del modifiable_items_dictionary["UppeR"]
 modifiable_items_dictionary.pop("SNAKE_CAse")
 
 modifiable_items_dictionary["HeLLO"] = 5
@@ -70,19 +75,26 @@ This example highlights how to inherit from `ModifiableItemsDict` and had key an
 ```python
 import ipaddress
 
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 
-class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
+class HostDict(ModifiableItemsDict):
     _key_modifiers = [str.casefold, str.strip]
     _value_modifiers = [ipaddress.ip_address]
     # Or
     # _value_modifiers = @staticmethod(ipaddress.ip_address)
 
 
-browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
+browsers = HostDict(
+    {
+        "  GooGle.com    ": "142.250.69.206",
+        " duckDUCKGo.cOM   ": "52.250.42.157"
+    }
+    )
 
-print(browsers)  # {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
+print(
+    browsers
+    )  # {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
 
 _old_browser = browsers.pop("  gOOgle.com  ")
 # or 
@@ -90,8 +102,7 @@ _old_browser = browsers.pop("  gOOgle.com  ")
 
 browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
 
-print(
-    browsers)  # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+print(browsers)  # {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
 ```
 
 ### Threading Example
@@ -105,7 +116,7 @@ import multiprocessing.pool
 import string
 import time
 
-import modifiable_items_dictionary
+from modifiable_items_dictionary import ModifiableItemsDict
 
 pool = multiprocessing.pool.ThreadPool(10)
 
@@ -115,7 +126,7 @@ def _slow_function(x):
     return x
 
 
-class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
+class TimeDictWithThreading(ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
     _map_function = pool.imap_unordered
@@ -123,12 +134,13 @@ class TimeDictWithThreading(modifiable_items_dictionary.ModifiableItemsDict):
     # _map_function = pool.imap
 
 
-class TimeDict(modifiable_items_dictionary.ModifiableItemsDict):
+class TimeDict(ModifiableItemsDict):
     _key_modifiers = (_slow_function,)
     _value_modifiers = (_slow_function,)
 
 
-iterable = {_letter: _index for _index, _letter in enumerate(string.ascii_letters)}
+iterable = {_letter: _index for _index, _letter in
+            enumerate(string.ascii_letters)}
 
 # Without Threading
 start = time.perf_counter()
@@ -142,3 +154,8 @@ TimeDictWithThreading(iterable)
 end = time.perf_counter()
 print(f"{end - start:.2f} seconds")  # 0.64 seconds
 ```
+
+## Reference
+This project was inspired by Raymond Hettinger ([rhettinger](https://github.com/rhettinger)).
+- Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
+  
