@@ -6,40 +6,62 @@ Example:
     >>> class HostDict(ModifiableItemsDict):
     ...     _key_modifiers = (str.casefold, str.strip)
     ...     _value_modifiers = [ipaddress.ip_address]
-    >>> browsers = HostDict({"  GooGle.com    ": "142.250.69.206", " duckDUCKGo.cOM   ": "52.250.42.157"})
+    >>> browsers = HostDict({"  GooGle.com    ": "142.250.69.206",
+    " duckDUCKGo.cOM   ": "52.250.42.157"})
     >>> browsers
-    {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com': IPv4Address('52.250.42.157')}
+    {'google.com': IPv4Address('142.250.69.206'), 'duckduckgo.com':
+    IPv4Address('52.250.42.157')}
     >>> _old_browser = browsers.pop("  gOOgle.Com  ")
     >>> browsers["   BrAvE.com   "] = "2600:9000:234c:5a00:6:d0d2:780:93a1"
     >>> browsers
-    {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com': IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
+    {'duckduckgo.com': IPv4Address('52.250.42.157'), 'brave.com':
+    IPv6Address('2600:9000:234c:5a00:6:d0d2:780:93a1')}
 
 Objects provided by this module:
-   `ModifiableItemsDict` - Adds the ability to modify key's and value's on creation, insertion, and retrieval
+   `ModifiableItemsDict` - Adds the ability to modify key's and value's on
+   creation, insertion, and retrieval
+
+Reference:
+This module was heavely insipred by Raymond Hettinger's class.
+    [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
 import contextlib
 import multiprocessing.pool
-import typing
+from typing import (
+    Any,
+    Callable,
+    Hashable,
+    ItemsView,
+    Iterable,
+    Mapping,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    overload,
+)
 
 # Sentinel
 NO_DEFAULT = object()
 
 # Typing
 # For python 3.6 compatibility
-Self = typing.TypeVar("Self", bound="ModifiableItemsDict")
+Self = TypeVar("Self", bound="ModifiableItemsDict")
 
-Key = typing.Hashable
-Value = typing.Any
-MappingCallable = typing.Union[
-    map, multiprocessing.pool.ThreadPool.map, multiprocessing.pool.ThreadPool.imap, multiprocessing.pool.ThreadPool.imap_unordered
+Key = Hashable
+Value = Any
+MappingCallable = Union[
+    map, multiprocessing.pool.ThreadPool.map,
+    multiprocessing.pool.ThreadPool.imap,
+    multiprocessing.pool.ThreadPool.imap_unordered
 ]
-KeyCallable = typing.Callable[[typing.Any], Key]
-ValueCallable = typing.Callable[[typing.Any], Value]
-KeyModifiers = typing.Optional[
-    typing.Union[Self, KeyCallable, typing.Iterable[KeyCallable], None]
+KeyCallable = Callable[[Any], Key]
+ValueCallable = Callable[[Any], Value]
+KeyModifiers = Optional[
+    Union[Self, KeyCallable, Iterable[KeyCallable], None]
 ]
-ValueModifiers = typing.Optional[
-    typing.Union[Self, ValueCallable, typing.Iterable[ValueCallable], None]
+ValueModifiers = Optional[
+    Union[Self, ValueCallable, Iterable[ValueCallable], None]
 ]
 
 
@@ -47,17 +69,25 @@ class ModifiableItemsDict(dict):
     """Dictionary class that can modify __key and v at runtime.
 
     ModifiableItemsDict() -> new empty modifiable __item's dictionary
-    ModifiableItemsDict(mapping) -> new modifiable __item's dictionary initialized from a mapping object's
+    ModifiableItemsDict(mapping) -> new modifiable __item's dictionary
+    initialized from a mapping object's
         (__key, v) pairs
-    ModifiableItemsDict(__m) -> new modifiable __item's dictionary initialized as if via:
+    ModifiableItemsDict(__m) -> new modifiable __item's dictionary
+    initialized as if via:
         d = ModifiableItemsDict()
         for k, v in __m:
             d[k] = v
-    ModifiableItemsDict(**kwargs) -> new modifiable __item's dictionary initialized with the name=v pairs
-        in the keyword argument list.  For example:  ModifiableItemsDict(one=1, two=2)
+    ModifiableItemsDict(**kwargs) -> new modifiable __item's dictionary
+    initialized with the name=v pairs
+        in the keyword argument list.  For example:  ModifiableItemsDict(
+        one=1, two=2)
 
-    Note: multithreading.pool.Pool doesn't work because a dict is not pickable but multhreading.pool.ThreadPool
-    is because it doesn't need to pickle
+    Note: `multiprocessing.pool.Pool` multiprocessing doesn't work because a
+    dict is not picklable but `multiprocessing.pool.ThreadPool`
+    does work since it doesn't need to pickle the object.
+
+    Reference:
+        [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
     """
 
     __slots__ = ()
@@ -69,15 +99,15 @@ class ModifiableItemsDict(dict):
 
     @staticmethod
     def _modify_item(
-            item: typing.Any,
-            modifiers: typing.Union[
-                typing.Iterable[typing.Callable[[typing.Any], typing.Hashable]],
-                typing.Iterable[typing.Callable[[typing.Any], typing.Any]],
-                typing.Callable[[typing.Any], typing.Hashable],
-                typing.Callable[[typing.Any], typing.Any],
+            item: Any,
+            modifiers: Union[
+                Iterable[Callable[[Any], Hashable]],
+                Iterable[Callable[[Any], Any]],
+                Callable[[Any], Hashable],
+                Callable[[Any], Any],
                 None,
             ],
-    ) -> typing.Any:
+    ) -> Any:
         """Modifies an *__item* with the *modifiers*
 
         Args:
@@ -85,7 +115,8 @@ class ModifiableItemsDict(dict):
             modifiers: Modifiers that will modify the *__item*.
 
         Returns:
-            The modified Item. If the modifiers are *None* return the *__item* unchanged.
+            The modified Item. If the modifiers are *None* return the
+            *__item* unchanged.
         """
         if not modifiers:
             return item
@@ -100,7 +131,7 @@ class ModifiableItemsDict(dict):
             )
             raise _error
 
-        if isinstance(modifiers, typing.Iterable):
+        if isinstance(modifiers, Iterable):
             for modifier in modifiers:
                 item = modifier(item)
             return item
@@ -112,7 +143,7 @@ class ModifiableItemsDict(dict):
             "Invalid Modifiers:",
             modifiers,
             "must be of types:",
-            (typing.Iterable, typing.Callable),
+            (Iterable, Callable),
         )
         raise _error
 
@@ -143,8 +174,8 @@ class ModifiableItemsDict(dict):
         return _modified_value
 
     def _modify_key_and_item(
-            self, key_and_value: typing.Tuple[Key, Value]
-    ) -> typing.Tuple[Key, Value]:
+            self, key_and_value: Tuple[Key, Value]
+    ) -> Tuple[Key, Value]:
         _key, _value = key_and_value
         if self._key_modifiers:
             _key = self._modify_key(_key)
@@ -152,29 +183,30 @@ class ModifiableItemsDict(dict):
             _value = self._modify_value(_value)
         return _key, _value
 
-    @typing.overload
+    @overload
     def _create_modified_mapping(
-            self, items_view: typing.ItemsView[Key, Value]
-    ) -> typing.Mapping[Key, Value]:
+            self, items_view: ItemsView[Key, Value]
+    ) -> Mapping[Key, Value]:
         ...
 
-    @typing.overload
+    @overload
     def _create_modified_mapping(
-            self, iterable: typing.Iterable[typing.Tuple[Key, Value]]
-    ) -> typing.Mapping[Key, Value]:
+            self, iterable: Iterable[Tuple[Key, Value]]
+    ) -> Mapping[Key, Value]:
         ...
 
     def _create_modified_mapping(self, iterable):
         """Create the modified mapping from the *Iterable*.
 
         Args:
-            iterable: Which will be converted to a new mapping which has had it's keys and values modified.
+            iterable: Which will be converted to a new mapping which has had
+            it's keys and values modified.
 
         Returns:
             Dictionary with the modified keys and values.
         """
 
-        new_mapping: typing.Mapping[Key, Value] = {
+        new_mapping: Mapping[Key, Value] = {
             key: value
             for key, value in self._map_function(
                 self._modify_key_and_item, iterable
@@ -184,19 +216,21 @@ class ModifiableItemsDict(dict):
         return new_mapping
 
     def _iterable_to_modified_dict(
-            self, iterable: typing.Iterable
-    ) -> typing.Mapping[Key, Value]:
-        """Convert an *iterable* to a *Mapping* that has had it's keys and values modified.
+            self, iterable: Iterable
+    ) -> Mapping[Key, Value]:
+        """Convert an *iterable* to a *Mapping* that has had it's keys and
+        values modified.
 
         Args:
-            iterable: *Iterable* that will be converted to a *Mapping* which has had it's items modified.
+            iterable: *Iterable* that will be converted to a *Mapping* which
+            has had it's items modified.
 
         Returns:
             Modified Mapping of the items.
         """
-        if isinstance(iterable, typing.Mapping):
+        if isinstance(iterable, Mapping):
             iterable = self._create_modified_mapping(iterable.items())
-        elif isinstance(iterable, typing.Iterable):
+        elif isinstance(iterable, Iterable):
             iterable = self._create_modified_mapping(iterable)
 
         return iterable
@@ -204,24 +238,24 @@ class ModifiableItemsDict(dict):
     @classmethod
     def fromkeys(
             cls,
-            __iterable: typing.Iterable[Key],
-            __value: typing.Optional[typing.Union[Value, None]] = None,
+            __iterable: Iterable[Key],
+            __value: Optional[Union[Value, None]] = None,
     ) -> Self:
         return cls(dict.fromkeys(__iterable, __value))
 
-    @typing.overload
+    @overload
     def __init__(self, **kwargs: Value) -> None:
         ...
 
-    @typing.overload
+    @overload
     def __init__(
-            self, mapping: typing.Mapping[Key, Value], **kwargs: Value
+            self, mapping: Mapping[Key, Value], **kwargs: Value
     ) -> None:
         ...
 
-    @typing.overload
+    @overload
     def __init__(
-            self, iterable: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
+            self, iterable: Iterable[Tuple[str, Any]], **kwargs: Value
     ) -> None:
         ...
 
@@ -239,7 +273,7 @@ class ModifiableItemsDict(dict):
 
         dict.__init__(self, iterable or dict(), **kwargs)
 
-    def __getitem__(self, k: Key) -> typing.Any:
+    def __getitem__(self, k: Key) -> Any:
         k = self._modify_key(k)
         return dict.__getitem__(self, k)
 
@@ -262,11 +296,11 @@ class ModifiableItemsDict(dict):
         __default = self._modify_value(__default)
         dict.setdefault(self, __key, __default)
 
-    @typing.overload
+    @overload
     def pop(self, __key: Key) -> Value:
         ...
 
-    @typing.overload
+    @overload
     def pop(self, __key: Key, default: Value = ...) -> Value:
         ...
 
@@ -280,30 +314,30 @@ class ModifiableItemsDict(dict):
 
         return value
 
-    @typing.overload
-    def get(self, __key: Key) -> typing.Union[Value, None]:
+    @overload
+    def get(self, __key: Key) -> Union[Value, None]:
         ...
 
-    @typing.overload
+    @overload
     def get(self, __key: Key, default: Value = None) -> Value:
         ...
 
     def get(self, __key: Key, default=None):
         __key = self._modify_key(__key)
-        value: typing.Union[Value, None] = dict.get(self, __key, default)
+        value: Union[Value, None] = dict.get(self, __key, default)
         return value
 
-    @typing.overload
-    def update(self, __m: typing.Mapping[Key, Value], **kwargs: Value) -> None:
+    @overload
+    def update(self, __m: Mapping[Key, Value], **kwargs: Value) -> None:
         ...
 
-    @typing.overload
+    @overload
     def update(
-            self, __m: typing.Iterable[typing.Tuple[str, typing.Any]], **kwargs: Value
+            self, __m: Iterable[Tuple[str, Any]], **kwargs: Value
     ) -> None:
         ...
 
-    @typing.overload
+    @overload
     def update(self, **kwargs: Value) -> None:
         ...
 
