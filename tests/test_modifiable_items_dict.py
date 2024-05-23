@@ -41,15 +41,15 @@ def _to_ipaddress(_value: typing.Any) -> typing.Any:
 
 @pytest.fixture(
     params=(
-            {
-                "CamelCase": 1,
-                "lower": 2,
-                "UPPER": 3,
-                "snake_case": 4,
-                5: "Five",
-                True: "True",
-            },
-            {1: 2, ("hello", "Goodbye"): 2},
+        {
+            'CamelCase': 1,
+            'lower': 2,
+            'UPPER': 3,
+            'snake_case': 4,
+            5: 'Five',
+            True: 'True',
+        },
+        {1: 2, ('hello', 'Goodbye'): 2},
     )
 )
 def valid_mapping(request) -> typing.Mapping:
@@ -64,10 +64,12 @@ class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
 
 class _TestingClass(typing.NamedTuple):
     cls: typing.Type[modifiable_items_dictionary.ModifiableItemsDict]
-    modify_key: (modifiable_items_dictionary.modifiable_items_dictionary
-                 .KeyCallable)
-    modify_value: (modifiable_items_dictionary.modifiable_items_dictionary
-                   .ValueCallable)
+    modify_key: (
+        modifiable_items_dictionary.modifiable_items_dictionary.KeyCallable
+    )
+    modify_value: (
+        modifiable_items_dictionary.modifiable_items_dictionary.ValueCallable
+    )
 
 
 def host_dict_with_list_and_static_method_modifiers() -> typing.Type[
@@ -81,7 +83,8 @@ def host_dict_with_list_and_static_method_modifiers() -> typing.Type[
 
 
 def host_dict_with_list_and_method_modifiers() -> typing.Type[
-    modifiable_items_dictionary.ModifiableItemsDict]:
+    modifiable_items_dictionary.ModifiableItemsDict
+]:
     class HostDict(modifiable_items_dictionary.ModifiableItemsDict):
         _key_modifiers = [_strip, _case_fold]
 
@@ -100,21 +103,21 @@ def host_dict_with_list_and_method_modifiers() -> typing.Type[
 
 @pytest.fixture(
     params=(
-            _TestingClass(
-                host_dict_with_list_and_static_method_modifiers(),
-                _strip_and_case_fold,
-                _to_ipaddress,
-            ),
-            _TestingClass(
-                host_dict_with_list_and_method_modifiers(),
-                _strip_and_case_fold,
-                _to_ipaddress,
-            ),
-            _TestingClass(
-                modifiable_items_dictionary.ModifiableItemsDict,
-                lambda x: x,
-                lambda x: x
-                )
+        _TestingClass(
+            host_dict_with_list_and_static_method_modifiers(),
+            _strip_and_case_fold,
+            _to_ipaddress,
+        ),
+        _TestingClass(
+            host_dict_with_list_and_method_modifiers(),
+            _strip_and_case_fold,
+            _to_ipaddress,
+        ),
+        _TestingClass(
+            modifiable_items_dictionary.ModifiableItemsDict,
+            lambda x: x,
+            lambda x: x,
+        ),
     )
 )
 def class_under_test(request) -> _TestingClass:
@@ -124,8 +127,8 @@ def class_under_test(request) -> _TestingClass:
 
 @pytest.fixture(
     params=[
-        {" GooGle.com ": "142.250.69.206", "CisCO": "72.163.4.185"},
-        [(" GooGle.com ", "142.250.69.206"), ("CisCO", "72.163.4.185")],
+        {' GooGle.com ': '142.250.69.206', 'CisCO': '72.163.4.185'},
+        [(' GooGle.com ', '142.250.69.206'), ('CisCO', '72.163.4.185')],
     ]
 )
 def hosts(request) -> typing.Mapping:
@@ -140,7 +143,7 @@ def unhashable_type(request):
 
 
 class TestModifiableItemsDict:
-    @pytest.mark.parametrize("bad_modifiers", [1, 7.62, "string"])
+    @pytest.mark.parametrize('bad_modifiers', [1, 7.62, 'string'])
     def test_bad_modifiers(self, bad_modifiers):
         class BadModifierTest(modifiable_items_dictionary.ModifiableItemsDict):
             _key_modifiers = bad_modifiers
@@ -158,9 +161,7 @@ class TestModifiableItemsDict:
         assert actual == expected
 
     def test__init__mapping(
-            self,
-            valid_mapping: typing.Mapping,
-            class_under_test
+        self, valid_mapping: typing.Mapping, class_under_test
     ):
         _class, _key_operation, _value_operation = class_under_test
 
@@ -172,20 +173,17 @@ class TestModifiableItemsDict:
         assert modifiable_dict == expected
 
     @pytest.mark.parametrize(
-        "valid_kwargs",
-        ({"a": 1, "B": 2}, {"lower": 3, "UPPER": 4, "MiXeD": 5}),
+        'valid_kwargs',
+        ({'a': 1, 'B': 2}, {'lower': 3, 'UPPER': 4, 'MiXeD': 5}),
     )
     def test__init__kwargs(
-            self,
-            valid_kwargs: typing.Mapping,
-            class_under_test
+        self, valid_kwargs: typing.Mapping, class_under_test
     ):
         _class, _key_operation, _value_operation = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            **valid_kwargs
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(**valid_kwargs)
         expected = {
             _key_operation(key): _value_operation(value)
             for key, value in valid_kwargs.items()
@@ -193,15 +191,15 @@ class TestModifiableItemsDict:
         assert modifiable_items_dict == expected
 
     @pytest.mark.parametrize(
-        "mapping_and_kwargs",
+        'mapping_and_kwargs',
         [
-            ({"a": 1, "B": 2}, {"lower": 3, "UPPER": 4, "MiXeD": 5}),
+            ({'a': 1, 'B': 2}, {'lower': 3, 'UPPER': 4, 'MiXeD': 5}),
         ],
     )
     def test__init__iterable_and_kwargs(
-            self,
-            mapping_and_kwargs: typing.Tuple[typing.Mapping, typing.Mapping],
-            class_under_test
+        self,
+        mapping_and_kwargs: typing.Tuple[typing.Mapping, typing.Mapping],
+        class_under_test,
     ):
         _class, _key_operation, _value_operation = class_under_test
         args, kwargs = mapping_and_kwargs
@@ -210,31 +208,27 @@ class TestModifiableItemsDict:
             for key, value in dict(**args, **kwargs).items()
         }
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            args,
-            **kwargs
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(args, **kwargs)
         assert modifiable_items_dict == expected
 
     @pytest.mark.parametrize(
-        "iterables",
+        'iterables',
         [
-            zip(["one", "TwO", "ThrEE"], [1, 2, 3]),
-            [("TwO", 2), ("one", 1), ("ThrEE", 3), (4, "FouR")],
+            zip(['one', 'TwO', 'ThrEE'], [1, 2, 3]),
+            [('TwO', 2), ('one', 1), ('ThrEE', 3), (4, 'FouR')],
         ],
     )
     def test__init__iterable(
-            self,
-            iterables: typing.Iterable[
-                typing.Tuple[typing.Hashable, typing.Any]],
-            class_under_test
+        self,
+        iterables: typing.Iterable[typing.Tuple[typing.Hashable, typing.Any]],
+        class_under_test,
     ):
         _class, _key_operation, _value_operation = class_under_test
         iterables_copy = copy.deepcopy(iterables)
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            iterables
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(iterables)
         expected: typing.Mapping = {
             _key_operation(key): _value_operation(value)
             for key, value in iterables_copy
@@ -242,14 +236,14 @@ class TestModifiableItemsDict:
         assert modifiable_items_dict == expected
         assert repr(modifiable_items_dict) == repr(expected)
 
-    @pytest.mark.parametrize("invalid_type", ([1], {2}, True, 1))
+    @pytest.mark.parametrize('invalid_type', ([1], {2}, True, 1))
     def test__init__invalid_type(self, invalid_type, class_under_test):
         _class, _, _ = class_under_test
 
         with pytest.raises(TypeError):
             _class(invalid_type)
 
-    @pytest.mark.parametrize("iterable", [[("1", 1), ("two", 2, 2)]])
+    @pytest.mark.parametrize('iterable', [[('1', 1), ('two', 2, 2)]])
     def test__init__bad_iterable_elements(self, iterable, class_under_test):
         _class, _, _ = class_under_test
 
@@ -257,22 +251,20 @@ class TestModifiableItemsDict:
             _class(iterable)
 
     @pytest.mark.parametrize(
-        "keys",
-        (["lower", "Title", "UPPER", "CamelCase", "snake_case", object()],),
+        'keys',
+        (['lower', 'Title', 'UPPER', 'CamelCase', 'snake_case', object()],),
     )
     def test_fromkeys(self, keys: typing.Iterable, class_under_test):
         _class, _key_operation, _value_operation = class_under_test
 
-        value = "Some Value"
+        value = 'Some Value'
         expected: typing.Mapping = {
             _key_operation(key): _value_operation(value) for key in keys
         }
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class.fromkeys(
-            keys,
-            value
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class.fromkeys(keys, value)
         assert modifiable_items_dict == expected
         assert isinstance(modifiable_items_dict, _class)
 
@@ -280,13 +272,11 @@ class TestModifiableItemsDict:
             assert key in modifiable_items_dict
 
     @pytest.mark.parametrize(
-        "keys",
-        (["lower", "Title", "UPPER", "CamelCase", "snake_case", object()],),
+        'keys',
+        (['lower', 'Title', 'UPPER', 'CamelCase', 'snake_case', object()],),
     )
     def test_fromkeys_none_value(
-            self,
-            keys: typing.Iterable,
-            class_under_test
+        self, keys: typing.Iterable, class_under_test
     ):
         _class, _key_operation, _value_operation = class_under_test
 
@@ -295,16 +285,15 @@ class TestModifiableItemsDict:
         }
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class.fromkeys(
-            keys
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class.fromkeys(keys)
         assert modifiable_items_dict == expected
         assert isinstance(modifiable_items_dict, _class)
 
         for key in keys:
             assert key in modifiable_items_dict
 
-    @pytest.mark.parametrize("invalid_type", (True, 1))
+    @pytest.mark.parametrize('invalid_type', (True, 1))
     def test_fromkeys_with_invalid_type(self, invalid_type, class_under_test):
         _class, _, _ = class_under_test
 
@@ -326,7 +315,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
         with pytest.raises(TypeError):
             modifiable_items_dict[unhashable_type] = 0
 
@@ -334,9 +324,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         for key, value in valid_mapping.items():
             assert modifiable_items_dict[key] == value
 
@@ -344,7 +333,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
         assert modifiable_items_dict == dict()
 
         # make unique __key which will not be in dict
@@ -357,9 +347,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         for key, value in valid_mapping.items():
             del modifiable_items_dict[key]
             assert key not in modifiable_items_dict
@@ -368,19 +357,17 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         with contextlib.suppress(KeyError):
-            del modifiable_items_dict["missing_key"]
+            del modifiable_items_dict['missing_key']
 
     def test_get(self, valid_mapping, class_under_test):
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         for key, value in valid_mapping.items():
             assert modifiable_items_dict.get(key) == value
             assert modifiable_items_dict.get(key, None) == value
@@ -389,25 +376,24 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         # make unique __key which will not be in dict
         _missing_key = object()
-        _default = "__default v"
+        _default = '__default v'
 
         assert modifiable_items_dict.get(_missing_key) is None
-        assert (
-                modifiable_items_dict.get(_missing_key, _default)
-                == _default
-        )
+        assert modifiable_items_dict.get(_missing_key, _default) == _default
 
     def test_get_unhashable_key(self, unhashable_type, class_under_test):
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
-        _default = "__default v"
+        _default = '__default v'
 
         with pytest.raises(TypeError):
             modifiable_items_dict.get(unhashable_type)
@@ -417,9 +403,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         for key, value in valid_mapping.items():
             assert modifiable_items_dict.pop(key) == value
             assert key not in modifiable_items_dict
@@ -428,11 +413,10 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            valid_mapping
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(valid_mapping)
         _missing_key = object()
-        _default = "default value"
+        _default = 'default value'
 
         assert modifiable_items_dict.pop(_missing_key, _default) == _default
 
@@ -440,7 +424,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         # make unique __key which will not be in dict
         _missing_key = object()
@@ -452,7 +437,8 @@ class TestModifiableItemsDict:
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         with pytest.raises(KeyError):
             modifiable_items_dict.pop(unhashable_type)
@@ -461,7 +447,8 @@ class TestModifiableItemsDict:
         _class, _key_operation, _value_operation = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
         expected: dict = dict()
         for key, item in valid_mapping.items():
             expected.setdefault(_key_operation(key), _value_operation(item))
@@ -470,31 +457,31 @@ class TestModifiableItemsDict:
         assert repr(modifiable_items_dict) == repr(expected)
 
     def test_setdefault_unhashable_type(
-            self, class_under_test, unhashable_type
+        self, class_under_test, unhashable_type
     ):
         _class, _, _ = class_under_test
 
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         with pytest.raises(TypeError):
             modifiable_items_dict.setdefault(unhashable_type)
 
     @pytest.mark.parametrize(
-        "starting_data", ({"start_lower": 1, "START_UPPER": 2, "__key": 1},)
+        'starting_data', ({'start_lower': 1, 'START_UPPER': 2, '__key': 1},)
     )
     @pytest.mark.parametrize(
-        "args", ({"UPPER": 1, "lower": 2, "CamelCase": 3, "Key": 2},)
+        'args', ({'UPPER': 1, 'lower': 2, 'CamelCase': 3, 'Key': 2},)
     )
-    @pytest.mark.parametrize("kwargs", ({"UP": 1, "down": 2, "__key": 3},))
+    @pytest.mark.parametrize('kwargs', ({'UP': 1, 'down': 2, '__key': 3},))
     def test_update_using_mapping(
-            self, class_under_test, starting_data, args, kwargs
+        self, class_under_test, starting_data, args, kwargs
     ):
         _class, _key_operation, _value_operation = class_under_test
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            starting_data
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(starting_data)
 
         expected = dict(
             {
@@ -521,21 +508,20 @@ class TestModifiableItemsDict:
         assert modifiable_items_dict == expected
 
     @pytest.mark.parametrize(
-        "starting_data", ({"start_lower": 1, "START_UPPER": 2, "__key": 1},)
+        'starting_data', ({'start_lower': 1, 'START_UPPER': 2, '__key': 1},)
     )
     @pytest.mark.parametrize(
-        "args",
-        ([("UPPER", 1), ("lower", 2), ("CamelCase", 3), ("__key", 2)],),
+        'args',
+        ([('UPPER', 1), ('lower', 2), ('CamelCase', 3), ('__key', 2)],),
     )
-    @pytest.mark.parametrize("kwargs", ({"UP": 1, "down": 2, "__key": 3},))
+    @pytest.mark.parametrize('kwargs', ({'UP': 1, 'down': 2, '__key': 3},))
     def test_update_using_sequence(
-            self, class_under_test, starting_data, args, kwargs
+        self, class_under_test, starting_data, args, kwargs
     ):
         _class, _key_operation, _value_operation = class_under_test
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class(
-            starting_data
-            )
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class(starting_data)
 
         expected = dict(
             {
@@ -564,18 +550,20 @@ class TestModifiableItemsDict:
     def test_update_unhashable_key(self, class_under_test, unhashable_type):
         _class, _, _ = class_under_test
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         iterable = [(unhashable_type, 1)]
 
         with pytest.raises(TypeError):
             modifiable_items_dict.update(iterable)
 
-    @pytest.mark.parametrize("iterable", [[("1", 1), ("two", 2, 2)]])
+    @pytest.mark.parametrize('iterable', [[('1', 1), ('two', 2, 2)]])
     def test_update_bad_iterable_value(self, class_under_test, iterable):
         _class, _, _ = class_under_test
         modifiable_items_dict: (
-            modifiable_items_dictionary.ModifiableItemsDict) = _class()
+            modifiable_items_dictionary.ModifiableItemsDict
+        ) = _class()
 
         with pytest.raises(ValueError):
             modifiable_items_dict.update(iterable)
