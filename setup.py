@@ -4,8 +4,10 @@ import setuptools
 __version__ = 'v3.0.0'
 __author__ = 'Tyler Bruno'
 _description = (
-    'Typed and Tested Modifiable Items Dict which allows keys and '
-    'values to be modified at run time.'
+    'Typed and Tested Modifiable Items Dict and ModifiableItemsAttrDict which '
+    'allow keys and values to be modified at run time. '
+    'ModifiableItemsAttrDict additionally provides attribute-style access to '
+    'dictionary items.'
 )
 
 with open('README.md', 'r', encoding='utf-8') as file:
@@ -18,7 +20,8 @@ setuptools.setup(
     description=_description,
     long_description=README,
     long_description_content_type='text/markdown',
-    keywords='python dict dictionary mapping key-mangling',
+    keywords='python dict attribute dictionary attrdict mapping '
+             'key-mangling value-mangling',
     url='https://github.com/tybruno/modifiable-items-dictionary',
     license='MIT',
     package_data={'modifiable-items-dictionary': ['py.typed']},
