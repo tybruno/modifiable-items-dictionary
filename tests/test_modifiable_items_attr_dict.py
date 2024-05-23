@@ -1,20 +1,22 @@
-""" Tests for the ModifiableItemsAttrDict class.
+"""Tests for the ModifiableItemsAttrDict class.
 
 The ModifiableItemsAttrDict class is a dictionary class that allows
 attribute-style access to its items. This test suite tests the __getattr__,
  __setattr__, and __delattr__ methods of the ModifiableItemsAttrDict class.
-
 """
 import pytest
-from modifiable_items_dictionary.modifiable_items_attribute_dictionary import ModifiableItemsAttrDict
+from modifiable_items_dictionary.modifiable_items_attribute_dictionary import (
+    ModifiableItemsAttrDict,
+)
+
 
 class TestModifiableItemsAttrDict:
     def test_getattr(self):
         """
         Test that the __getattr__ method correctly retrieves the value of an attribute.
         """
-        attr_dict = ModifiableItemsAttrDict({"key": "value"})
-        assert attr_dict.key == "value"
+        attr_dict = ModifiableItemsAttrDict({'key': 'value'})
+        assert attr_dict.key == 'value'
 
     def test_setattr(self):
         """
@@ -22,16 +24,16 @@ class TestModifiableItemsAttrDict:
         attribute.
         """
         attr_dict = ModifiableItemsAttrDict()
-        attr_dict.key = "value"
-        assert attr_dict["key"] == "value"
+        attr_dict.key = 'value'
+        assert attr_dict['key'] == 'value'
 
     def test_delattr(self):
         """
         Test that the __delattr__ method correctly deletes an attribute.
         """
-        attr_dict = ModifiableItemsAttrDict({"key": "value"})
+        attr_dict = ModifiableItemsAttrDict({'key': 'value'})
         del attr_dict.key
-        assert "key" not in attr_dict
+        assert 'key' not in attr_dict
 
     def test_delattr_not_found(self):
         """
@@ -57,5 +59,5 @@ class TestModifiableItemsAttrDict:
         retrieve the value of an attribute.
         """
         attr_dict = ModifiableItemsAttrDict()
-        attr_dict.key = "value"
-        assert attr_dict.key == "value"
+        attr_dict.key = 'value'
+        assert attr_dict.key == 'value'

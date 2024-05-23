@@ -13,8 +13,11 @@ Reference:
 This module was heavily inspired by Raymond Hettinger's class.
     [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
-from modifiable_items_dictionary.modifiable_items_dictionary import ModifiableItemsDict
+from modifiable_items_dictionary.modifiable_items_dictionary import (
+    ModifiableItemsDict,
+)
 from typing import Any
+
 
 class ModifiableItemsAttrDict(ModifiableItemsDict):
     """
@@ -41,13 +44,15 @@ class ModifiableItemsAttrDict(ModifiableItemsDict):
             The value of the attribute.
 
         Raises:
-            AttributeError: If the attribute is not found in the dictionary items.
+            AttributeError: If the attribute is not found in the dictionary
+                items.
         """
         try:
             value = self[name]
         except KeyError:
             raise AttributeError(
-                f"'{self.__class__.__name__}' object has no attribute '{name}'."
+                f"'{self.__class__.__name__}' object has no attribute "
+                f"'{name}'."
             )
         return value
 
@@ -77,11 +82,13 @@ class ModifiableItemsAttrDict(ModifiableItemsDict):
             name (str): The name of the attribute.
 
         Raises:
-            AttributeError: If the attribute is not found in the dictionary items.
+            AttributeError: If the attribute is not found in the
+                dictionary items.
         """
         if name in self:
             del self[name]
         else:
             raise AttributeError(
-                f"'{self.__class__.__name__}' object has no attribute '{name}'."
+                f"'{self.__class__.__name__}' object has no attribute "
+                f"'{name}'."
             )

@@ -30,20 +30,19 @@ NO_DEFAULT = object()
 
 # Typing
 # For python 3.6 compatibility
-Self = TypeVar("Self", bound="ModifiableItemsDict")
+Self = TypeVar('Self', bound='ModifiableItemsDict')
 
 Key = Hashable
 Value = Any
 MappingCallable = Union[
-    map, multiprocessing.pool.ThreadPool.map,
+    map,
+    multiprocessing.pool.ThreadPool.map,
     multiprocessing.pool.ThreadPool.imap,
-    multiprocessing.pool.ThreadPool.imap_unordered
+    multiprocessing.pool.ThreadPool.imap_unordered,
 ]
 KeyCallable = Callable[[Any], Key]
 ValueCallable = Callable[[Any], Value]
-KeyModifiers = Optional[
-    Union[Self, KeyCallable, Iterable[KeyCallable], None]
-]
+KeyModifiers = Optional[Union[Self, KeyCallable, Iterable[KeyCallable], None]]
 ValueModifiers = Optional[
     Union[Self, ValueCallable, Iterable[ValueCallable], None]
 ]
@@ -83,14 +82,14 @@ class ModifiableItemsDict(dict):
 
     @staticmethod
     def _modify_item(
-            item: Any,
-            modifiers: Union[
-                Iterable[Callable[[Any], Hashable]],
-                Iterable[Callable[[Any], Any]],
-                Callable[[Any], Hashable],
-                Callable[[Any], Any],
-                None,
-            ],
+        item: Any,
+        modifiers: Union[
+            Iterable[Callable[[Any], Hashable]],
+            Iterable[Callable[[Any], Any]],
+            Callable[[Any], Hashable],
+            Callable[[Any], Any],
+            None,
+        ],
     ) -> Any:
         """Modifies an *__item* with the *modifiers*
 
@@ -108,9 +107,9 @@ class ModifiableItemsDict(dict):
         # Defensive Programming
         if isinstance(modifiers, str):
             _error: TypeError = TypeError(
-                "Invalid Modifiers:",
+                'Invalid Modifiers:',
                 modifiers,
-                "Can not be of types",
+                'Can not be of types',
                 (str,),
             )
             raise _error
@@ -124,9 +123,9 @@ class ModifiableItemsDict(dict):
             return item
 
         _error = TypeError(
-            "Invalid Modifiers:",
+            'Invalid Modifiers:',
             modifiers,
-            "must be of types:",
+            'must be of types:',
             (Iterable, Callable),
         )
         raise _error
@@ -158,7 +157,7 @@ class ModifiableItemsDict(dict):
         return _modified_value
 
     def _modify_key_and_item(
-            self, key_and_value: Tuple[Key, Value]
+        self, key_and_value: Tuple[Key, Value]
     ) -> Tuple[Key, Value]:
         _key, _value = key_and_value
         if self._key_modifiers:
@@ -169,13 +168,13 @@ class ModifiableItemsDict(dict):
 
     @overload
     def _create_modified_mapping(
-            self, items_view: ItemsView[Key, Value]
+        self, items_view: ItemsView[Key, Value]
     ) -> Mapping[Key, Value]:
         ...
 
     @overload
     def _create_modified_mapping(
-            self, iterable: Iterable[Tuple[Key, Value]]
+        self, iterable: Iterable[Tuple[Key, Value]]
     ) -> Mapping[Key, Value]:
         ...
 
@@ -200,7 +199,7 @@ class ModifiableItemsDict(dict):
         return new_mapping
 
     def _iterable_to_modified_dict(
-            self, iterable: Iterable
+        self, iterable: Iterable
     ) -> Mapping[Key, Value]:
         """Convert an *iterable* to a *Mapping* that has had it's keys and
         values modified.
@@ -221,9 +220,9 @@ class ModifiableItemsDict(dict):
 
     @classmethod
     def fromkeys(
-            cls,
-            __iterable: Iterable[Key],
-            __value: Optional[Union[Value, None]] = None,
+        cls,
+        __iterable: Iterable[Key],
+        __value: Optional[Union[Value, None]] = None,
     ) -> Self:
         return cls(dict.fromkeys(__iterable, __value))
 
@@ -232,21 +231,19 @@ class ModifiableItemsDict(dict):
         ...
 
     @overload
-    def __init__(
-            self, mapping: Mapping[Key, Value], **kwargs: Value
-    ) -> None:
+    def __init__(self, mapping: Mapping[Key, Value], **kwargs: Value) -> None:
         ...
 
     @overload
     def __init__(
-            self, iterable: Iterable[Tuple[str, Any]], **kwargs: Value
+        self, iterable: Iterable[Tuple[str, Any]], **kwargs: Value
     ) -> None:
         ...
 
     def __init__(
-            self,
-            iterable=None,
-            **kwargs,
+        self,
+        iterable=None,
+        **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
@@ -316,9 +313,7 @@ class ModifiableItemsDict(dict):
         ...
 
     @overload
-    def update(
-            self, __m: Iterable[Tuple[str, Any]], **kwargs: Value
-    ) -> None:
+    def update(self, __m: Iterable[Tuple[str, Any]], **kwargs: Value) -> None:
         ...
 
     @overload
@@ -326,9 +321,9 @@ class ModifiableItemsDict(dict):
         ...
 
     def update(
-            self,
-            __m=None,
-            **kwargs,
+        self,
+        __m=None,
+        **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
