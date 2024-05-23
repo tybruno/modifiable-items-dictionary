@@ -1,7 +1,7 @@
 """Setup.py"""
 import setuptools
 
-__version__ = "v2.0.2"
+__version__ = "v3.0.0"
 __author__ = "Tyler Bruno"
 _description = ("Typed and Tested Modifiable Items Dict which allows keys and "
                 "values to be modified at run time.")
