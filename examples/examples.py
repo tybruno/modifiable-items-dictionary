@@ -1,3 +1,14 @@
+"""This module contains examples of how to use the
+`modifiable_items_dictionary` module.
+
+The `modifiable_items_dictionary` module provides two classes:
+    - `ModifiableItemsDict`: A dictionary class that can modify keys and
+        values at runtime.
+    - `ModifiableItemsAttrDict`: A dictionary class that allows
+        attribute-style access to its items.
+
+This module contains examples of how to use these classes.
+"""
 import ipaddress
 import multiprocessing.pool
 import string
@@ -45,6 +56,49 @@ def simple_example():
     modifiable_items_dict['HeLLO'] = 5
 
     print(modifiable_items_dict)  # {'camelcase': 4, 'hello': 6}
+
+
+def modifiable_items_attr_dict_example():
+    """This example shows how to use `ModifiableItemsAttrDict`."""
+    import modifiable_items_dictionary
+
+    def _add_1(_value):
+        if isinstance(_value, int):
+            _value += 1
+        return _value
+
+    def _case_fold_string(_value):
+        if isinstance(_value, str):
+            _value = _value.casefold()
+        return _value
+
+    modifiable_items_dictionary.ModifiableItemsAttrDict._key_modifiers = [
+        str.casefold
+    ]
+    modifiable_items_dictionary.ModifiableItemsAttrDict._value_modifiers = (
+        _add_1,
+        _case_fold_string,
+    )
+
+    modifiable_items_attr_dict = (
+        modifiable_items_dictionary.ModifiableItemsAttrDict(
+            {'lower': 1, 'UPPER': 2}, CamelCase=3, snake_case='FoUR'
+        )
+    )
+
+    print(
+        modifiable_items_attr_dict
+    )  # {'lower': 2, 'upper': 3, 'camelcase': 4, 'snake_case': 'four'}
+
+    # Key-based access
+    del modifiable_items_attr_dict['LOWER']
+    modifiable_items_attr_dict['HeLLO'] = 5
+
+    # Attribute-based access
+    del modifiable_items_attr_dict.UPPER
+    modifiable_items_attr_dict.HeLLO = 6
+    print(modifiable_items_attr_dict.hELlo)   # 6
+    print(modifiable_items_attr_dict)  # {'camelcase': 4, 'hello': 6}
 
 
 def simple_inheritance_example():
