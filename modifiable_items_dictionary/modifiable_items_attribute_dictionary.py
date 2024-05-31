@@ -28,6 +28,7 @@ class ModifiableItemsAttrDict(ModifiableItemsDict):
     items. This means that in addition to the standard dictionary access
     syntax (dict["key"]), you can also use attribute syntax (dict.key).
     """
+    __slots__ = ()
 
     def __getattr__(self, name: str) -> Any:
         """
