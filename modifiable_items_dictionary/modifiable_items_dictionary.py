@@ -10,6 +10,7 @@ This module was heavily inspired by Raymond Hettinger's class.
     [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
 import contextlib
+
 # pylint: disable=no-name-in-module
 from typing import (
     Any,
@@ -23,7 +24,6 @@ from typing import (
     TypeVar,
     Union,
     overload,
-    Protocol,
 )
 
 
@@ -48,17 +48,6 @@ KeyModifiers = Optional[Union[Self, KeyCallable, Iterable[KeyCallable], None]]
 ValueModifiers = Optional[
     Union[Self, ValueCallable, Iterable[ValueCallable], None]
 ]
-
-
-# Protocol
-class SupportsKeysAndGetItem(Protocol[_KT, _VT_co]):
-    """Protocol for objects that support keys and getitem."""
-
-    def keys(self) -> Iterable[_KT]:
-        """Return an iterable of the container's keys."""
-
-    def __getitem__(self, __key: _KT) -> _VT_co:
-        """Return the value for a key."""
 
 
 class ModifiableItemsDict(dict):
@@ -326,22 +315,6 @@ class ModifiableItemsDict(dict):
         __key = self._modify_key(__key)
         value: Union[Value, None] = dict.get(self, __key, default)
         return value
-
-    @overload
-    def update(
-        self, __m: SupportsKeysAndGetItem[Any, Value], **kwargs: Any
-    ) -> None:
-        ...
-
-    @overload
-    def update(
-        self, __m: Iterable[Tuple[Any, Any]], **kwargs: Any
-    ) -> None:
-        ...
-
-    @overload
-    def update(self, **kwargs: Value) -> None:
-        ...
 
     def update(
         self,
