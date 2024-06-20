@@ -10,6 +10,7 @@ This module was heavily inspired by Raymond Hettinger's class.
     [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
 import contextlib
+# pylint: disable=no-name-in-module
 from typing import (
     Any,
     Callable,
@@ -47,6 +48,7 @@ KeyModifiers = Optional[Union[Self, KeyCallable, Iterable[KeyCallable], None]]
 ValueModifiers = Optional[
     Union[Self, ValueCallable, Iterable[ValueCallable], None]
 ]
+
 
 # Protocol
 class SupportsKeysAndGetItem(Protocol[_KT, _VT_co]):
@@ -327,13 +329,13 @@ class ModifiableItemsDict(dict):
 
     @overload
     def update(
-        self, other: SupportsKeysAndGetItem[Any, Value], /, **kwargs: Value
+        self, __m: SupportsKeysAndGetItem[Any, Value], **kwargs: Any
     ) -> None:
         ...
 
     @overload
     def update(
-        self, other: Iterable[Tuple[Any, Any]], /, **kwargs: Value
+        self, __m: Iterable[Tuple[Any, Any]], **kwargs: Any
     ) -> None:
         ...
 
@@ -343,14 +345,14 @@ class ModifiableItemsDict(dict):
 
     def update(
         self,
-        other=None,
+        __m=None,
         **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
-            if other:
-                other = self._iterable_to_modified_dict(other)
+            if __m:
+                __m = self._iterable_to_modified_dict(__m)
             if kwargs:
                 kwargs = self._iterable_to_modified_dict(kwargs)
 
-        dict.update(self, other or {}, **kwargs)
+        dict.update(self, __m or {}, **kwargs)
