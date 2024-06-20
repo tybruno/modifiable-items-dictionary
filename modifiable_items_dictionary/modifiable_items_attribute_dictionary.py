@@ -13,10 +13,11 @@ Reference:
 This module was heavily inspired by Raymond Hettinger's class.
     [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
+from typing import Any
+
 from modifiable_items_dictionary.modifiable_items_dictionary import (
     ModifiableItemsDict,
 )
-from typing import Any
 
 
 class ModifiableItemsAttrDict(ModifiableItemsDict):
@@ -28,6 +29,7 @@ class ModifiableItemsAttrDict(ModifiableItemsDict):
     items. This means that in addition to the standard dictionary access
     syntax (dict["key"]), you can also use attribute syntax (dict.key).
     """
+
     __slots__ = ()
 
     def __getattr__(self, name: str) -> Any:
@@ -50,11 +52,11 @@ class ModifiableItemsAttrDict(ModifiableItemsDict):
         """
         try:
             value = self[name]
-        except KeyError:
+        except KeyError as error:
             raise AttributeError(
                 f"'{self.__class__.__name__}' object has no attribute "
                 f"'{name}'."
-            )
+            ) from error
         return value
 
     def __setattr__(self, name: str, value: Any) -> None:
