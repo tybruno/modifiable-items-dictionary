@@ -21,7 +21,7 @@ setuptools.setup(
     long_description=README,
     long_description_content_type='text/markdown',
     keywords='python dict attribute dictionary attrdict mapping '
-             'key-mangling value-mangling',
+    'key-mangling value-mangling',
     url='https://github.com/tybruno/modifiable-items-dictionary',
     license='MIT',
     package_data={'modifiable-items-dictionary': ['py.typed']},

@@ -10,7 +10,6 @@ This module was heavily inspired by Raymond Hettinger's class.
     [1] Hettinger, R. (2023). (Advanced) Python For Engineers: Part 3.
 """
 import contextlib
-import multiprocessing.pool
 from typing import (
     Any,
     Callable,
@@ -23,7 +22,9 @@ from typing import (
     TypeVar,
     Union,
     overload,
+    Protocol,
 )
+
 
 # Sentinel
 NO_DEFAULT = object()
@@ -33,12 +34,12 @@ NO_DEFAULT = object()
 Self = TypeVar('Self', bound='ModifiableItemsDict')
 
 Key = Hashable
+_KT = TypeVar('_KT')
+_VT_co = TypeVar('_VT_co', covariant=True)
 Value = Any
 MappingCallable = Union[
     map,
-    multiprocessing.pool.ThreadPool.map,
-    multiprocessing.pool.ThreadPool.imap,
-    multiprocessing.pool.ThreadPool.imap_unordered,
+    Callable,
 ]
 KeyCallable = Callable[[Any], Key]
 ValueCallable = Callable[[Any], Value]
@@ -46,6 +47,16 @@ KeyModifiers = Optional[Union[Self, KeyCallable, Iterable[KeyCallable], None]]
 ValueModifiers = Optional[
     Union[Self, ValueCallable, Iterable[ValueCallable], None]
 ]
+
+# Protocol
+class SupportsKeysAndGetItem(Protocol[_KT, _VT_co]):
+    """Protocol for objects that support keys and getitem."""
+
+    def keys(self) -> Iterable[_KT]:
+        """Return an iterable of the container's keys."""
+
+    def __getitem__(self, __key: _KT) -> _VT_co:
+        """Return the value for a key."""
 
 
 class ModifiableItemsDict(dict):
@@ -75,7 +86,6 @@ class ModifiableItemsDict(dict):
 
     __slots__ = ()
 
-    # TODO: Add validators
     _key_modifiers: KeyModifiers = None
     _value_modifiers: ValueModifiers = None
     _map_function: MappingCallable = map
@@ -189,12 +199,9 @@ class ModifiableItemsDict(dict):
             Dictionary with the modified keys and values.
         """
 
-        new_mapping: Mapping[Key, Value] = {
-            key: value
-            for key, value in self._map_function(
-                self._modify_key_and_item, iterable
-            )
-        }
+        new_mapping = dict(
+            self._map_function(self._modify_key_and_item, iterable)
+        )
 
         return new_mapping
 
@@ -223,7 +230,17 @@ class ModifiableItemsDict(dict):
         cls,
         __iterable: Iterable[Key],
         __value: Optional[Union[Value, None]] = None,
-    ) -> Self:
+    ):
+        """Create a new dictionary with keys from iterable and values set to
+        value.
+
+        Args:
+            __iterable: Iterable of keys.
+            __value: Value to set for each key. Default is None.
+
+        Returns:
+            New dictionary with keys from iterable and values set to value.
+        """
         return cls(dict.fromkeys(__iterable, __value))
 
     @overload
@@ -252,7 +269,7 @@ class ModifiableItemsDict(dict):
             if kwargs:
                 kwargs = self._iterable_to_modified_dict(kwargs)
 
-        dict.__init__(self, iterable or dict(), **kwargs)
+        dict.__init__(self, iterable or {}, **kwargs)
 
     def __getitem__(self, k: Key) -> Any:
         k = self._modify_key(k)
@@ -272,7 +289,7 @@ class ModifiableItemsDict(dict):
         _is_in: bool = dict.__contains__(self, __item)
         return _is_in
 
-    def setdefault(self, __key: Key, __default: Value = None) -> None:
+    def setdefault(self, __key, __default: Value = None) -> None:
         __key = self._modify_key(__key)
         __default = self._modify_value(__default)
         dict.setdefault(self, __key, __default)
@@ -289,9 +306,9 @@ class ModifiableItemsDict(dict):
         __key = self._modify_key(__key)
 
         if default is NO_DEFAULT:
-            value: Value = dict.pop(self, __key)
+            value = dict.pop(self, __key)
         else:
-            value: Value = dict.pop(self, __key, default)
+            value = dict.pop(self, __key, default)
 
         return value
 
@@ -309,11 +326,15 @@ class ModifiableItemsDict(dict):
         return value
 
     @overload
-    def update(self, __m: Mapping[Key, Value], **kwargs: Value) -> None:
+    def update(
+        self, other: SupportsKeysAndGetItem[Any, Value], /, **kwargs: Value
+    ) -> None:
         ...
 
     @overload
-    def update(self, __m: Iterable[Tuple[str, Any]], **kwargs: Value) -> None:
+    def update(
+        self, other: Iterable[Tuple[Any, Any]], /, **kwargs: Value
+    ) -> None:
         ...
 
     @overload
@@ -322,14 +343,14 @@ class ModifiableItemsDict(dict):
 
     def update(
         self,
-        __m=None,
+        other=None,
         **kwargs,
     ):
         # If there is a ValueError have the inherited class deal with it.
         with contextlib.suppress(ValueError):
-            if __m:
-                __m = self._iterable_to_modified_dict(__m)
+            if other:
+                other = self._iterable_to_modified_dict(other)
             if kwargs:
                 kwargs = self._iterable_to_modified_dict(kwargs)
 
-        dict.update(self, __m or dict(), **kwargs)
+        dict.update(self, other or {}, **kwargs)
